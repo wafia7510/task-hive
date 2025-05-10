@@ -37,8 +37,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
+
+    # Third-party apps
     'rest_framework',
+    'rest_framework.authtoken',
     'corsheaders',
     'dj_rest_auth',
     'dj_rest_auth.registration',
@@ -46,7 +48,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'django.contrib.sites',
 
-   
+    # Custom apps
     'accounts',
     'tasks',
     'notes',
@@ -55,15 +57,23 @@ INSTALLED_APPS = [
     'follows',
 ]
 
+
 SITE_ID = 1
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # React frontend dev URL
 ]
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'allauth.account.middleware.AccountMiddleware',  # Required for allauth
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
