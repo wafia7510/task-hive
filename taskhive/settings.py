@@ -9,8 +9,11 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
-
 from pathlib import Path
+from decouple import config
+import cloudinary
+
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-ymb4sq%7m0vbwyknb(-3kzy)bwg1t21=dha0(*d%v_j#*+397t'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = []
 
@@ -44,9 +47,13 @@ INSTALLED_APPS = [
     'corsheaders',
     'dj_rest_auth',
     'dj_rest_auth.registration',
+    'django.contrib.sites',
     'allauth',
     'allauth.account',
-    'django.contrib.sites',
+    'allauth.socialaccount',
+    'cloudinary',
+    'cloudinary_storage',
+    'django_filters',
 
     # Custom apps
     'accounts',
@@ -55,8 +62,11 @@ INSTALLED_APPS = [
     'comments',
     'likes',
     'follows',
+    'profiles',
 ]
-
+REST_AUTH_REGISTER_SERIALIZERS = {
+    'REGISTER_SERIALIZER': 'accounts.serializers.CustomRegisterSerializer',
+}
 
 SITE_ID = 1
 
@@ -69,6 +79,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
     ],
 }
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -152,3 +163,12 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+ACCOUNT_EMAIL_VERIFICATION = "none"
+ACCOUNT_EMAIL_REQUIRED = False
+
+cloudinary.config(
+    cloud_name=config('CLOUD_NAME'),
+    api_key=config('CLOUDINARY_API_KEY'),
+    api_secret=config('CLOUDINARY_API_SECRET')
+)
