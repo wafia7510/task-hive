@@ -25,6 +25,9 @@ urlpatterns = [
     path('api/profiles/', include('profiles.urls')),
     path('api/follows/', include('follows.urls')),
     path('api/tasks/', include('tasks.urls')),
+    path('api/notes/', include('notes.urls')),
+    path('api/tags/', include('tags.urls')),
+
 
 
 ]

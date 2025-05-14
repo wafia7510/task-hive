@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     'likes',
     'follows',
     'profiles',
+    'tags',
 ]
 REST_AUTH_REGISTER_SERIALIZERS = {
     'REGISTER_SERIALIZER': 'accounts.serializers.CustomRegisterSerializer',
