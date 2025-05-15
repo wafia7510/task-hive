@@ -1,0 +1,27 @@
+/* src/styles/NavBar.module.css */
+
+.navbarCustom {
+  background-color: indigo !important;
+}
+
+.navLink {
+  color: white !important;
+  font-weight: 500;
+  margin-left: 1rem;
+}
+
+.navLink:hover {
+  text-decoration: underline;
+}
+
+.logoutButton {
+  margin-left: 1rem;
+  font-weight: 500;
+}
+
+.brandWhite {
+  color: white !important;
+  font-weight: bold;
+  font-size: 1.3rem;
+  text-decoration: none;
+}
