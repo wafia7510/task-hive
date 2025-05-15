@@ -1,7 +1,7 @@
 import React from 'react';
 import { Navbar, Nav, Container, Button } from 'react-bootstrap';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
 import styles from '../styles/NavBar.module.css';
 
 const NavBar = () => {
@@ -16,30 +16,30 @@ const NavBar = () => {
   return (
     <Navbar expand="lg" className={`${styles.navbarCustom} shadow-sm`} variant="dark">
       <Container>
-        <Navbar.Brand href="/" className={styles.brandWhite}>TaskHive</Navbar.Brand>
+        <Navbar.Brand as={Link} to="/" className={styles.brandWhite}>TaskHive</Navbar.Brand>
         <Navbar.Toggle />
         <Navbar.Collapse className="justify-content-end">
           <Nav>
             {user ? (
               <>
-                <Nav.Link href="/dashboard" className={styles.navLink}>Dashboard</Nav.Link>
-                <Nav.Link href="/tasks" className={styles.navLink}>Tasks</Nav.Link>
-                <Nav.Link href="/notes" className={styles.navLink}>Notes</Nav.Link>
-                <Nav.Link href="/profile" className={styles.navLink}>Profile</Nav.Link>
+                <Nav.Link as={Link} to="/dashboard" className={styles.navLink}>Dashboard</Nav.Link>
+                <Nav.Link as={Link} to="/tasks" className={styles.navLink}>Tasks</Nav.Link>
+                <Nav.Link as={Link} to="/notes" className={styles.navLink}>Notes</Nav.Link>
+                <Nav.Link as={Link} to="/profile" className={styles.navLink}>Profile</Nav.Link>
                 <Button
                   variant="outline-light"
                   size="sm"
                   onClick={handleLogout}
-                  className={`${styles.logoutButton}`}
+                  className={styles.logoutButton}
                 >
                   Logout
                 </Button>
               </>
             ) : (
               <>
-                <Nav.Link href="/" className={styles.navLink}>Home</Nav.Link>
-                <Nav.Link href="/login" className={styles.navLink}>Login</Nav.Link>
-                <Nav.Link href="/register" className={styles.navLink}>Signup</Nav.Link>
+                <Nav.Link as={Link} to="/" className={styles.navLink}>Home</Nav.Link>
+                <Nav.Link as={Link} to="/login" className={styles.navLink}>Login</Nav.Link>
+                <Nav.Link as={Link} to="/register" className={styles.navLink}>Signup</Nav.Link>
               </>
             )}
           </Nav>
