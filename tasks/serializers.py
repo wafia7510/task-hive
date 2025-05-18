@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Task
+from django.utils import timezone
 
 
 class TaskSerializer(serializers.ModelSerializer):
@@ -14,4 +15,7 @@ class TaskSerializer(serializers.ModelSerializer):
         ]
 
     def get_is_overdue(self, obj):
-        return obj.is_overdue()
+        if not obj.due_date:
+            return False
+        today = timezone.localtime(timezone.now()).date()
+        return obj.due_date < today

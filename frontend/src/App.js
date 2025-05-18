@@ -9,6 +9,7 @@ import DashboardPage from './pages/DashboardPage';
 //import Notes from './pages/Notes'; // If exists
 //import Profile from './pages/Profile'; // If exists
 import PrivateRoute from './utils/PrivateRoute';
+import TasksPage from './pages/TasksPage';
 
 function App() {
   return (
@@ -35,14 +36,14 @@ function App() {
             </PrivateRoute>
           }
         />*/}
-        {/*<Route
+        <Route
           path="/tasks"
           element={
             <PrivateRoute>
-              <Tasks />
+              <TasksPage />
             </PrivateRoute>
           }
-        />*/}
+        />
         {/*<Route
           path="/notes"
           element={

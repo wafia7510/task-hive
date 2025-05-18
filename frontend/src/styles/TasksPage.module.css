@@ -1,0 +1,17 @@
+.banner {
+  height: 200px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.bannerText {
+  position: absolute;
+  bottom: 20px;
+  left: 40px;
+  color: white;
+  font-size: 2rem;
+  font-weight: 600;
+  text-shadow: 1px 1px 3px black;
+}
