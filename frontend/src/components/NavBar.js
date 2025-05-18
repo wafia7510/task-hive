@@ -1,3 +1,4 @@
+// src/components/NavBar.js
 import React from 'react';
 import { Navbar, Nav, Container, Button } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
@@ -10,16 +11,16 @@ const NavBar = () => {
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate('/login'); // Redirect to login after logout
   };
 
   return (
     <Navbar expand="lg" className={`${styles.navbarCustom} shadow-sm`} variant="dark">
       <Container>
         <Navbar.Brand as={Link} to="/" className={styles.brandWhite}>TaskHive</Navbar.Brand>
-        <Navbar.Toggle />
-        <Navbar.Collapse className="justify-content-end">
-          <Nav>
+        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+        <Navbar.Collapse id="basic-navbar-nav" className="justify-content-end">
+          <Nav className="align-items-center">
             {user ? (
               <>
                 <Nav.Link as={Link} to="/dashboard" className={styles.navLink}>Dashboard</Nav.Link>
@@ -27,10 +28,10 @@ const NavBar = () => {
                 <Nav.Link as={Link} to="/notes" className={styles.navLink}>Notes</Nav.Link>
                 <Nav.Link as={Link} to="/profile" className={styles.navLink}>Profile</Nav.Link>
                 <Button
+                  onClick={handleLogout}
                   variant="outline-light"
                   size="sm"
-                  onClick={handleLogout}
-                  className={styles.logoutButton}
+                  className={`${styles.logoutButton} ms-3`}
                 >
                   Logout
                 </Button>
