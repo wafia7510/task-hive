@@ -88,7 +88,7 @@ const TasksPage = () => {
     <>
       <NavBar />
       <div className={styles.banner} style={{ backgroundImage: `url(${taskBanner})` }}>
-        <h2 className={styles.bannerText}>📋 Manage Your Study Goals</h2>
+        <h2 className={styles.bannerText}>📋 Manage You Task </h2>
       </div>
 
       <Container className="my-4">

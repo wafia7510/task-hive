@@ -2,20 +2,20 @@ from rest_framework import generics, permissions
 from .models import Tag
 from .serializers import TagSerializer
 
-
 class TagListCreateView(generics.ListCreateAPIView):
-    """
-    List all tags or create a new one.
-    """
-    queryset = Tag.objects.all()
     serializer_class = TagSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Tag.objects.filter(owner=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
 
 
-class TagDetailView(generics.RetrieveAPIView):
-    """
-    Retrieve details of a specific tag by ID.
-    """
-    queryset = Tag.objects.all()
+class TagDetailView(generics.RetrieveDestroyAPIView):  # Allow delete
     serializer_class = TagSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Tag.objects.filter(owner=self.request.user)

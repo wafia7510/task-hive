@@ -1,12 +1,15 @@
 from django.db import models
-
+from django.contrib.auth.models import User
 
 class Tag(models.Model):
     """
-    Tag model stores keywords or labels for organizing notes.
-    Tags can be reused across multiple notes.
+    Each tag is owned by a specific user.
     """
-    name = models.CharField(max_length=50, unique=True)  # Tag name must be unique
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tags')
+    name = models.CharField(max_length=50)
+
+    class Meta:
+        unique_together = ('owner', 'name')  # Same name can exist for different users
 
     def __str__(self):
         return self.name

@@ -1,11 +1,9 @@
 from rest_framework import serializers
 from .models import Tag
 
-
 class TagSerializer(serializers.ModelSerializer):
-    """
-    Serializer for Tag model.
-    """
+    owner = serializers.ReadOnlyField(source='owner.username')
+
     class Meta:
         model = Tag
-        fields = '__all__'
+        fields = ['id', 'name', 'owner']

@@ -5,11 +5,12 @@ import HomePage from './components/HomePage';
 import Register from './pages/Signup';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
-//import Tasks from './pages/Tasks'; // If exists
-//import Notes from './pages/Notes'; // If exists
 //import Profile from './pages/Profile'; // If exists
 import PrivateRoute from './utils/PrivateRoute';
 import TasksPage from './pages/TasksPage';
+import NotesPage from './pages/NotesPage';
+
+
 
 function App() {
   return (
@@ -44,14 +45,14 @@ function App() {
             </PrivateRoute>
           }
         />
-        {/*<Route
+        <Route
           path="/notes"
           element={
             <PrivateRoute>
-              <Notes />
+              <NotesPage />
             </PrivateRoute>
           }
-        />*/}
+        />
       </Routes>
     </Router>
   );
