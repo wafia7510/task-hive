@@ -27,7 +27,7 @@ urlpatterns = [
     path('api/tasks/', include('tasks.urls')),
     path('api/notes/', include('notes.urls')),
     path('api/tags/', include('tags.urls')),
-    path('api/comments/', include('comments.urls')),
+    path('api/', include('comments.urls')),
     path('api/likes/', include('likes.urls')),
 
 

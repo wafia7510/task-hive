@@ -1,10 +1,12 @@
-// NotesPage.js - With Add/Edit Note Modals + Tag Management
+
 import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Form, Button, Card, Alert, Badge, Modal } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { axiosInstance } from '../api/axiosDefaults';
 import NavBar from '../components/NavBar';
 import CreatableSelect from 'react-select/creatable';
+import CommentsModal from '../components/CommentsModal';
+import ManageTagsModal from '../components/ManageTagsModal';
 import notesBanner from '../assets/notes_banner.jpg';
 import styles from '../styles/NotesPage.module.css';
 
@@ -14,13 +16,16 @@ const NotesPage = () => {
   const [selectedTags, setSelectedTags] = useState([]);
   const [search, setSearch] = useState('');
   const [filterTag, setFilterTag] = useState(null);
-  const [formData, setFormData] = useState({ title: '', content: '' });
+  const [formData, setFormData] = useState({ title: '', content: '', is_public: false });
   const [editingId, setEditingId] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showTagModal, setShowTagModal] = useState(false);
   const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
+  const [showCommentModal, setShowCommentModal] = useState(false);
+  const [selectedNoteForComment, setSelectedNoteForComment] = useState(null);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -29,31 +34,34 @@ const NotesPage = () => {
       navigate('/login');
       return;
     }
+
+    const fetchNotesAndTags = async () => {
+      const headers = { Authorization: `Token ${token}` };
+      try {
+        const [notesRes, tagsRes] = await Promise.all([
+          axiosInstance.get('/api/notes/', { headers }),
+          axiosInstance.get('/api/tags/', { headers }),
+        ]);
+        setNotes(notesRes.data);
+        setTags(tagsRes.data);
+      } catch (err) {
+        setError('Error fetching notes or tags');
+      }
+    };
+
     fetchNotesAndTags();
   }, [navigate]);
 
-  const fetchNotesAndTags = async () => {
-    const token = localStorage.getItem('authToken');
-    const headers = { Authorization: `Token ${token}` };
-    try {
-      const [notesRes, tagsRes] = await Promise.all([
-        axiosInstance.get('/api/notes/', { headers }),
-        axiosInstance.get('/api/tags/', { headers }),
-      ]);
-      setNotes(notesRes.data);
-      setTags(tagsRes.data);
-    } catch (err) {
-      console.error('Fetch error:', err);
-      setError('Error fetching notes or tags');
-    }
-  };
-
   const handleChange = (e) => {
-    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
   };
 
   const resetForm = () => {
-    setFormData({ title: '', content: '' });
+    setFormData({ title: '', content: '', is_public: false });
     setSelectedTags([]);
     setEditingId(null);
   };
@@ -70,46 +78,38 @@ const NotesPage = () => {
       for (const name of newTagNames) {
         await axiosInstance.post('/api/tags/', { name }, { headers });
       }
-    } catch (err) {
-      console.error('Error creating new tags:', err);
-      setError('Error saving new tags');
-      return;
-    }
 
-    try {
       if (editingId) {
-        await axiosInstance.put(`/api/notes/${editingId}/`, {
-          ...formData,
-          tags: tagNames,
-        }, { headers });
+        await axiosInstance.put(`/api/notes/${editingId}/`, { ...formData, tags: tagNames }, { headers });
         setSuccess('Note updated successfully.');
         setShowEditModal(false);
       } else {
-        await axiosInstance.post('/api/notes/', {
-          ...formData,
-          tags: tagNames,
-        }, { headers });
+        await axiosInstance.post('/api/notes/', { ...formData, tags: tagNames }, { headers });
         setSuccess('Note created successfully.');
         setShowAddModal(false);
       }
 
       resetForm();
-      setError('');
-      fetchNotesAndTags();
+      const [notesRes, tagsRes] = await Promise.all([
+        axiosInstance.get('/api/notes/', { headers }),
+        axiosInstance.get('/api/tags/', { headers }),
+      ]);
+      setNotes(notesRes.data);
+      setTags(tagsRes.data);
     } catch (err) {
-      console.error('Submit error:', err);
       setError('Error saving note.');
-      setSuccess('');
     }
   };
 
   const handleEdit = (note) => {
-    setFormData({ title: note.title, content: note.content });
+    setFormData({
+      title: note.title,
+      content: note.content,
+      is_public: note.is_public,
+    });
     setSelectedTags(note.tags.map(tag => ({ value: tag, label: tag })));
     setEditingId(note.id);
     setShowEditModal(true);
-    setSuccess('');
-    setError('');
   };
 
   const handleDelete = async (id) => {
@@ -118,30 +118,16 @@ const NotesPage = () => {
     try {
       await axiosInstance.delete(`/api/notes/${id}/`, { headers });
       setSuccess('Note deleted.');
-      fetchNotesAndTags();
+      const res = await axiosInstance.get('/api/notes/', { headers });
+      setNotes(res.data);
     } catch (err) {
-      console.error('Delete error:', err);
       setError('Error deleting note.');
     }
   };
 
-  const handleDeleteTag = async (tagName) => {
-    const token = localStorage.getItem('authToken');
-    const headers = { Authorization: `Token ${token}` };
-    const tagInUse = notes.some(note => note.tags.includes(tagName));
-    if (tagInUse) {
-      alert('Cannot delete a tag that is being used in notes.');
-      return;
-    }
-    try {
-      const tag = tags.find(t => t.name === tagName);
-      if (tag) {
-        await axiosInstance.delete(`/api/tags/${tag.id}/`, { headers });
-        setTags(prev => prev.filter(t => t.id !== tag.id));
-      }
-    } catch (err) {
-      console.error('Tag delete error:', err);
-    }
+  const handleOpenComments = (note) => {
+    setSelectedNoteForComment(note);
+    setShowCommentModal(true);
   };
 
   const filteredNotes = notes.filter(note => {
@@ -153,7 +139,6 @@ const NotesPage = () => {
   return (
     <>
       <NavBar />
-
       <div className={styles.banner}>
         <img src={notesBanner} alt="Notes Banner" className={styles.bannerImage} />
         <div className={styles.bannerText}>
@@ -163,8 +148,6 @@ const NotesPage = () => {
       </div>
 
       <Container className="mt-4">
-        <h2 className={styles.notesHeading}>Manage Notes</h2>
-
         {success && <Alert variant="success">{success}</Alert>}
         {error && <Alert variant="danger">{error}</Alert>}
 
@@ -181,148 +164,139 @@ const NotesPage = () => {
           onChange={(e) => setSearch(e.target.value)}
         />
 
-        {tags.length > 0 && (
-          <div className="mb-3">
-            <strong>Filter by tag:</strong>{' '}
-            {tags.map(tag => (
-              <Badge
-                key={tag.name}
-                bg={filterTag === tag.name ? 'primary' : 'secondary'}
-                onClick={() => setFilterTag(tag.name === filterTag ? null : tag.name)}
-                style={{ cursor: 'pointer', marginRight: '0.4rem' }}
-              >
-                {tag.name}
-              </Badge>
-            ))}
-            {filterTag && (
-              <Button
-                variant="outline-secondary"
-                size="sm"
-                onClick={() => setFilterTag(null)}
-                className="ms-2"
-              >
-                Clear Filter
-              </Button>
-            )}
-          </div>
-        )}
+        <div className="mb-3">
+          {tags.map(tag => (
+            <Badge
+              key={tag.name}
+              bg={filterTag === tag.name ? 'primary' : 'secondary'}
+              onClick={() => setFilterTag(tag.name === filterTag ? null : tag.name)}
+              style={{ cursor: 'pointer', marginRight: '0.4rem' }}
+            >
+              {tag.name}
+            </Badge>
+          ))}
+        </div>
 
-        {filteredNotes.length === 0 ? (
-          <p>No matching notes found.</p>
-        ) : (
-          <Row>
-            {filteredNotes.map(note => (
-              <Col md={6} lg={4} key={note.id} className="mb-4">
-                <Card className={`shadow-sm h-100 ${styles.cardNote}`}>
-                  <Card.Body>
-                    <Card.Title className={styles.cardTitle}>{note.title}</Card.Title>
-                    <Card.Text className={styles.cardText}>
-                      {note.content.length > 100 ? note.content.slice(0, 100) + '...' : note.content}
-                    </Card.Text>
-                    <div className="mb-2">
-                      {note.tags.map(tag => (
-                        <Badge
-                          key={tag}
-                          bg="info"
-                          className={styles.tagBadge}
-                          onClick={() => setFilterTag(tag)}
-                          style={{ cursor: 'pointer' }}
-                        >
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
-                    <div className="d-flex justify-content-between">
-                      <Button size="sm" variant="secondary" onClick={() => handleEdit(note)}>Edit</Button>
-                      <Button size="sm" variant="danger" onClick={() => handleDelete(note.id)}>Delete</Button>
-                    </div>
-                  </Card.Body>
-                  <Card.Footer className={styles.cardFooter}>
-                    Created: {new Date(note.created_at).toLocaleDateString()}
-                  </Card.Footer>
-                </Card>
-              </Col>
-            ))}
-          </Row>
-        )}
+        <Row>
+          {filteredNotes.map(note => (
+            <Col md={6} lg={4} key={note.id} className="mb-4">
+              <Card className={`shadow-sm h-100 ${styles.cardNote}`}>
+                <Card.Body>
+                  <Card.Title>{note.title}</Card.Title>
+                  <Card.Text>{note.content.length > 100 ? note.content.slice(0, 100) + '...' : note.content}</Card.Text>
+                  <div className="mb-2">
+                    {note.tags.map(tag => (
+                      <Badge
+                        key={tag}
+                        bg="info"
+                        className={styles.tagBadge}
+                        onClick={() => setFilterTag(tag)}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
+                  <div className="d-flex justify-content-between gap-2">
+                    <Button size="sm" variant="secondary" onClick={() => handleEdit(note)}>Edit</Button>
+                    <Button size="sm" variant="danger" onClick={() => handleDelete(note.id)}>Delete</Button>
+                    <Button size="sm" variant="info" onClick={() => handleOpenComments(note)}>Comments</Button>
+                  </div>
+                </Card.Body>
+                <Card.Footer className={styles.cardFooter}>
+                  Created: {new Date(note.created_at).toLocaleDateString()}
+                </Card.Footer>
+              </Card>
+            </Col>
+          ))}
+        </Row>
+
+        <CommentsModal
+          note={selectedNoteForComment}
+          show={showCommentModal}
+          onHide={() => setShowCommentModal(false)}
+        />
+
+        <ManageTagsModal
+          show={showTagModal}
+          onHide={() => setShowTagModal(false)}
+          tags={tags}
+          setTags={setTags}
+          notes={notes}
+        />
+
+        <Modal show={showAddModal} onHide={() => setShowAddModal(false)}>
+          <Modal.Header closeButton>
+            <Modal.Title>Add New Note</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form onSubmit={handleSubmit}>
+              <Form.Group controlId="title">
+                <Form.Label>Title</Form.Label>
+                <Form.Control name="title" value={formData.title} onChange={handleChange} required />
+              </Form.Group>
+              <Form.Group controlId="content" className="mt-2">
+                <Form.Label>Content</Form.Label>
+                <Form.Control name="content" as="textarea" rows={3} value={formData.content} onChange={handleChange} required />
+              </Form.Group>
+              <Form.Group controlId="tags" className="mt-2">
+                <Form.Label>Tags</Form.Label>
+                <CreatableSelect
+                  isMulti
+                  options={tags.map(tag => ({ value: tag.name, label: tag.name }))}
+                  value={selectedTags}
+                  onChange={setSelectedTags}
+                />
+              </Form.Group>
+              <Form.Check
+                type="checkbox"
+                label="Make this note public"
+                name="is_public"
+                checked={formData.is_public}
+                onChange={handleChange}
+                className="mt-2"
+              />
+              <Button type="submit" className="mt-3">Create Note</Button>
+            </Form>
+          </Modal.Body>
+        </Modal>
+
+        <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
+          <Modal.Header closeButton>
+            <Modal.Title>Edit Note</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form onSubmit={handleSubmit}>
+              <Form.Group controlId="title">
+                <Form.Label>Title</Form.Label>
+                <Form.Control name="title" value={formData.title} onChange={handleChange} required />
+              </Form.Group>
+              <Form.Group controlId="content" className="mt-2">
+                <Form.Label>Content</Form.Label>
+                <Form.Control name="content" as="textarea" rows={3} value={formData.content} onChange={handleChange} required />
+              </Form.Group>
+              <Form.Group controlId="tags" className="mt-2">
+                <Form.Label>Tags</Form.Label>
+                <CreatableSelect
+                  isMulti
+                  options={tags.map(tag => ({ value: tag.name, label: tag.name }))}
+                  value={selectedTags}
+                  onChange={setSelectedTags}
+                />
+              </Form.Group>
+              <Form.Check
+                type="checkbox"
+                label="Make this note public"
+                name="is_public"
+                checked={formData.is_public}
+                onChange={handleChange}
+                className="mt-2"
+              />
+              <Button type="submit" className="mt-3">Save Changes</Button>
+            </Form>
+          </Modal.Body>
+        </Modal>
       </Container>
-
-      {/* Add Note Modal */}
-      <Modal show={showAddModal} onHide={() => setShowAddModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Add New Note</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form onSubmit={handleSubmit}>
-            <Form.Group controlId="title">
-              <Form.Label>Title</Form.Label>
-              <Form.Control name="title" value={formData.title} onChange={handleChange} required />
-            </Form.Group>
-            <Form.Group controlId="content" className="mt-2">
-              <Form.Label>Content</Form.Label>
-              <Form.Control name="content" as="textarea" rows={3} value={formData.content} onChange={handleChange} required />
-            </Form.Group>
-            <Form.Group controlId="tags" className="mt-2">
-              <Form.Label>Tags</Form.Label>
-              <CreatableSelect
-                isMulti
-                options={tags.map(tag => ({ value: tag.name, label: tag.name }))}
-                value={selectedTags}
-                onChange={setSelectedTags}
-              />
-            </Form.Group>
-            <Button type="submit" className="mt-3">Create Note</Button>
-          </Form>
-        </Modal.Body>
-      </Modal>
-
-      {/* Edit Note Modal */}
-      <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Edit Note</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form onSubmit={handleSubmit}>
-            <Form.Group controlId="title">
-              <Form.Label>Title</Form.Label>
-              <Form.Control name="title" value={formData.title} onChange={handleChange} required />
-            </Form.Group>
-            <Form.Group controlId="content" className="mt-2">
-              <Form.Label>Content</Form.Label>
-              <Form.Control name="content" as="textarea" rows={3} value={formData.content} onChange={handleChange} required />
-            </Form.Group>
-            <Form.Group controlId="tags" className="mt-2">
-              <Form.Label>Tags</Form.Label>
-              <CreatableSelect
-                isMulti
-                options={tags.map(tag => ({ value: tag.name, label: tag.name }))}
-                value={selectedTags}
-                onChange={setSelectedTags}
-              />
-            </Form.Group>
-            <Button type="submit" className="mt-3">Save Changes</Button>
-          </Form>
-        </Modal.Body>
-      </Modal>
-
-      {/* Manage Tags Modal */}
-      <Modal show={showTagModal} onHide={() => setShowTagModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Manage Tags</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {tags.length === 0 ? (
-            <p>No tags available.</p>
-          ) : (
-            tags.map(tag => (
-              <div key={tag.id} className="d-flex justify-content-between align-items-center mb-2">
-                <span>{tag.name}</span>
-                <Button size="sm" variant="danger" onClick={() => handleDeleteTag(tag.name)}>Delete</Button>
-              </div>
-            ))
-          )}
-        </Modal.Body>
-      </Modal>
     </>
   );
 };

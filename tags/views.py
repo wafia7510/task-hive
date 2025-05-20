@@ -13,7 +13,7 @@ class TagListCreateView(generics.ListCreateAPIView):
         serializer.save(owner=self.request.user)
 
 
-class TagDetailView(generics.RetrieveDestroyAPIView):  # Allow delete
+class TagDetailView(generics.RetrieveUpdateDestroyAPIView):  # Allow delete
     serializer_class = TagSerializer
     permission_classes = [permissions.IsAuthenticated]
 

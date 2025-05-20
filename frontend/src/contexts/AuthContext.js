@@ -20,6 +20,7 @@ export function AuthProvider({ children }) {
 
     localStorage.setItem('authToken', token);
     localStorage.setItem('authUser', JSON.stringify(userData));
+    localStorage.setItem('username', userData.username); // ✅ This line is key
     setUser(userData);
   };
 

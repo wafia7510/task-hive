@@ -3,6 +3,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from .models import Note
 from .serializers import NoteSerializer
 from .permissions import IsOwnerOrReadOnly
+from django.db.models import Q
 
 
 class NoteListCreateView(generics.ListCreateAPIView):
@@ -14,7 +15,8 @@ class NoteListCreateView(generics.ListCreateAPIView):
     filterset_fields = ['tags']
 
     def get_queryset(self):
-        return Note.objects.filter(owner=self.request.user)
+        user = self.request.user
+        return Note.objects.filter(Q(owner=user) | Q(is_public=True)).distinct()
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)

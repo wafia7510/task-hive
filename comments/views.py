@@ -3,8 +3,14 @@ from .models import Comment
 from .serializers import CommentSerializer
 from .permissions import IsCommentOwnerOrReadOnly
 
+
 class CommentListCreateView(generics.ListCreateAPIView):
-    """List all comments for a note or create a new comment."""
+    """
+    List all comments for a note or create a new comment.
+    - Endpoint: /api/notes/<note_id>/comments/
+    - Authenticated users can post comments.
+    - Comments are sorted by creation date (oldest first).
+    """
     serializer_class = CommentSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -13,13 +19,19 @@ class CommentListCreateView(generics.ListCreateAPIView):
         return Comment.objects.filter(note__id=note_id).order_by('created_at')
 
     def perform_create(self, serializer):
-        note_id = self.kwargs['note_id']
-        serializer.save(commenter=self.request.user, note_id=note_id)
+        serializer.save(
+            commenter=self.request.user,
+            note_id=self.kwargs['note_id']
+        )
+
 
 class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):
-    """Retrieve, update, or delete a specific comment."""
+    """
+    Retrieve or delete a comment.
+    - Only the comment owner can delete.
+    - No update/edit functionality to keep discussions consistent.
+    - Endpoint: /api/comments/<pk>/
+    """
+    queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = [permissions.IsAuthenticated, IsCommentOwnerOrReadOnly]
-
-    def get_queryset(self):
-        return Comment.objects.all()
