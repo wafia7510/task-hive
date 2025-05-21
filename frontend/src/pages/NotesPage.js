@@ -77,8 +77,15 @@ const NotesPage = () => {
 
     try {
       for (const name of newTagNames) {
-        await axiosInstance.post('/api/tags/', { name }, { headers });
-      }
+        try {
+            await axiosInstance.post('/api/tags/', { name }, { headers });
+        } catch (err) {
+            if (err.response?.status !== 400) {
+                throw err; // only ignore "already exists" errors
+            }
+        }
+    }
+
 
       if (editingId) {
         await axiosInstance.put(`/api/notes/${editingId}/`, { ...formData, tags: tagNames }, { headers });
@@ -205,8 +212,13 @@ const NotesPage = () => {
                     <LikesButton noteId={note.id} initialLikesCount={note.like_count} />
                   </div>
                 </Card.Body>
-                <Card.Footer className={styles.cardFooter}>
-                  Created: {new Date(note.created_at).toLocaleDateString()}
+                <Card.Footer className={`d-flex justify-content-between ${styles.cardFooter}`}>
+                    <small className="text-muted">
+                        Updated: {new Date(note.updated_at).toLocaleDateString()}
+                    </small>
+                    <small className="text-muted">
+                        Created: {new Date(note.created_at).toLocaleDateString()}
+                    </small>
                 </Card.Footer>
               </Card>
             </Col>
