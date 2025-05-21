@@ -5,10 +5,10 @@ import HomePage from './components/HomePage';
 import Register from './pages/Signup';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
-//import Profile from './pages/Profile'; // If exists
 import PrivateRoute from './utils/PrivateRoute';
 import TasksPage from './pages/TasksPage';
 import NotesPage from './pages/NotesPage';
+import ProfilePage from './pages/ProfilePage';
 
 
 
@@ -29,14 +29,14 @@ function App() {
             </PrivateRoute>
           }
         />
-        {/*<Route
+        <Route
           path="/profile"
           element={
             <PrivateRoute>
-              <Profile />
+              <ProfilePage />
             </PrivateRoute>
           }
-        />*/}
+        />
         <Route
           path="/tasks"
           element={
