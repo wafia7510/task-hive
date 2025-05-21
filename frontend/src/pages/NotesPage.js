@@ -7,6 +7,7 @@ import NavBar from '../components/NavBar';
 import CreatableSelect from 'react-select/creatable';
 import CommentsModal from '../components/CommentsModal';
 import ManageTagsModal from '../components/ManageTagsModal';
+import LikesButton from '../components/LikesButton';
 import notesBanner from '../assets/notes_banner.jpg';
 import styles from '../styles/NotesPage.module.css';
 
@@ -201,6 +202,7 @@ const NotesPage = () => {
                     <Button size="sm" variant="secondary" onClick={() => handleEdit(note)}>Edit</Button>
                     <Button size="sm" variant="danger" onClick={() => handleDelete(note.id)}>Delete</Button>
                     <Button size="sm" variant="info" onClick={() => handleOpenComments(note)}>Comments</Button>
+                    <LikesButton noteId={note.id} initialLikesCount={note.like_count} />
                   </div>
                 </Card.Body>
                 <Card.Footer className={styles.cardFooter}>
@@ -224,79 +226,83 @@ const NotesPage = () => {
           setTags={setTags}
           notes={notes}
         />
-
-        <Modal show={showAddModal} onHide={() => setShowAddModal(false)}>
-          <Modal.Header closeButton>
-            <Modal.Title>Add New Note</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <Form onSubmit={handleSubmit}>
-              <Form.Group controlId="title">
-                <Form.Label>Title</Form.Label>
-                <Form.Control name="title" value={formData.title} onChange={handleChange} required />
-              </Form.Group>
-              <Form.Group controlId="content" className="mt-2">
-                <Form.Label>Content</Form.Label>
-                <Form.Control name="content" as="textarea" rows={3} value={formData.content} onChange={handleChange} required />
-              </Form.Group>
-              <Form.Group controlId="tags" className="mt-2">
-                <Form.Label>Tags</Form.Label>
-                <CreatableSelect
-                  isMulti
-                  options={tags.map(tag => ({ value: tag.name, label: tag.name }))}
-                  value={selectedTags}
-                  onChange={setSelectedTags}
-                />
-              </Form.Group>
-              <Form.Check
-                type="checkbox"
-                label="Make this note public"
-                name="is_public"
-                checked={formData.is_public}
-                onChange={handleChange}
-                className="mt-2"
-              />
-              <Button type="submit" className="mt-3">Create Note</Button>
-            </Form>
-          </Modal.Body>
-        </Modal>
-
-        <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
-          <Modal.Header closeButton>
-            <Modal.Title>Edit Note</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <Form onSubmit={handleSubmit}>
-              <Form.Group controlId="title">
-                <Form.Label>Title</Form.Label>
-                <Form.Control name="title" value={formData.title} onChange={handleChange} required />
-              </Form.Group>
-              <Form.Group controlId="content" className="mt-2">
-                <Form.Label>Content</Form.Label>
-                <Form.Control name="content" as="textarea" rows={3} value={formData.content} onChange={handleChange} required />
-              </Form.Group>
-              <Form.Group controlId="tags" className="mt-2">
-                <Form.Label>Tags</Form.Label>
-                <CreatableSelect
-                  isMulti
-                  options={tags.map(tag => ({ value: tag.name, label: tag.name }))}
-                  value={selectedTags}
-                  onChange={setSelectedTags}
-                />
-              </Form.Group>
-              <Form.Check
-                type="checkbox"
-                label="Make this note public"
-                name="is_public"
-                checked={formData.is_public}
-                onChange={handleChange}
-                className="mt-2"
-              />
-              <Button type="submit" className="mt-3">Save Changes</Button>
-            </Form>
-          </Modal.Body>
-        </Modal>
       </Container>
+
+      {/* Add Note Modal */}
+      <Modal show={showAddModal} onHide={() => setShowAddModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Add New Note</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form onSubmit={handleSubmit}>
+            <Form.Group controlId="title">
+              <Form.Label>Title</Form.Label>
+              <Form.Control name="title" value={formData.title} onChange={handleChange} required />
+            </Form.Group>
+            <Form.Group controlId="content" className="mt-2">
+              <Form.Label>Content</Form.Label>
+              <Form.Control name="content" as="textarea" rows={3} value={formData.content} onChange={handleChange} required />
+            </Form.Group>
+            <Form.Group controlId="is_public" className="mt-2">
+              <Form.Check
+                type="checkbox"
+                label="Make Note Public"
+                name="is_public"
+                checked={formData.is_public}
+                onChange={handleChange}
+              />
+            </Form.Group>
+            <Form.Group controlId="tags" className="mt-2">
+              <Form.Label>Tags</Form.Label>
+              <CreatableSelect
+                isMulti
+                options={tags.map(tag => ({ value: tag.name, label: tag.name }))}
+                value={selectedTags}
+                onChange={setSelectedTags}
+              />
+            </Form.Group>
+            <Button type="submit" className="mt-3">Create Note</Button>
+          </Form>
+        </Modal.Body>
+      </Modal>
+
+      {/* Edit Note Modal */}
+      <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Edit Note</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form onSubmit={handleSubmit}>
+            <Form.Group controlId="title">
+              <Form.Label>Title</Form.Label>
+              <Form.Control name="title" value={formData.title} onChange={handleChange} required />
+            </Form.Group>
+            <Form.Group controlId="content" className="mt-2">
+              <Form.Label>Content</Form.Label>
+              <Form.Control name="content" as="textarea" rows={3} value={formData.content} onChange={handleChange} required />
+            </Form.Group>
+            <Form.Group controlId="is_public" className="mt-2">
+              <Form.Check
+                type="checkbox"
+                label="Make Note Public"
+                name="is_public"
+                checked={formData.is_public}
+                onChange={handleChange}
+              />
+            </Form.Group>
+            <Form.Group controlId="tags" className="mt-2">
+              <Form.Label>Tags</Form.Label>
+              <CreatableSelect
+                isMulti
+                options={tags.map(tag => ({ value: tag.name, label: tag.name }))}
+                value={selectedTags}
+                onChange={setSelectedTags}
+              />
+            </Form.Group>
+            <Button type="submit" className="mt-3">Save Changes</Button>
+          </Form>
+        </Modal.Body>
+      </Modal>
     </>
   );
 };

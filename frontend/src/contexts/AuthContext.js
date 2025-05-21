@@ -1,3 +1,5 @@
+// src/contexts/AuthContext.js
+
 import React, { createContext, useContext, useState } from 'react';
 import { axiosInstance } from '../api/axiosDefaults';
 
@@ -18,9 +20,10 @@ export function AuthProvider({ children }) {
     const token = response.data.token;
     const userData = response.data.user || { username: formData.username };
 
+    // ✅ Store token and user info
     localStorage.setItem('authToken', token);
     localStorage.setItem('authUser', JSON.stringify(userData));
-    localStorage.setItem('username', userData.username); // ✅ This line is key
+    localStorage.setItem('username', userData.username); 
     setUser(userData);
   };
 
@@ -28,6 +31,7 @@ export function AuthProvider({ children }) {
     setUser(null);
     localStorage.removeItem('authToken');
     localStorage.removeItem('authUser');
+    localStorage.removeItem('username'); // ✅ Also clean up username
   };
 
   const signup = async (formData) => {

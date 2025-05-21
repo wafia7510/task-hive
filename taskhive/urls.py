@@ -17,19 +17,17 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('dj-rest-auth/', include('dj_rest_auth.urls')),  # login, logout, password change
-    path('dj-rest-auth/registration/', include('dj_rest_auth.registration.urls')),  # ✅ This enables /registration/
+    path('dj-rest-auth/registration/', include('dj_rest_auth.registration.urls')), 
     path('api/accounts/', include('accounts.urls')),
     path('api/profiles/', include('profiles.urls')),
     path('api/follows/', include('follows.urls')),
     path('api/tasks/', include('tasks.urls')),
     path('api/notes/', include('notes.urls')),
     path('api/tags/', include('tags.urls')),
-    path('api/', include('comments.urls')),
+    path('api/', include('comments.urls')), 
     path('api/likes/', include('likes.urls')),
-
-
-
 ]
