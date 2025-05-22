@@ -1,17 +1,47 @@
 /* src/styles/Signup.module.css */
 
-input:focus,
-select:focus,
-textarea:focus,
-button:focus {
-  outline: none;
-  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
-}
-
+/* 🟣 Transparent indigo card */
 .card {
-  border-radius: 12px;
+  background-color: rgba(75, 0, 130, 0.4); /* transparent indigo */
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 30px;
+  color: white;
+  margin-top: 30px;
 }
 
-button {
+/* ✍️ White labels */
+.card label {
+  color: white;
+  font-weight: 500;
+}
+
+/* ⬜ White input fields */
+.card input {
+  background-color: white;
+  color: #333;
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+/* ✨ Focus styling */
+.card input:focus {
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.4);
+}
+
+/* ⚪ White button with indigo text */
+.card .btn-primary {
+  background-color: white;
+  color: indigo;
   font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.card .btn-primary:hover {
+  background-color: #e6e6e6;
+  color: indigo;
 }

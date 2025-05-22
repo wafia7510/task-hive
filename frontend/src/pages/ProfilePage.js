@@ -1,4 +1,3 @@
-// ✅ FIXED FULL PROFILE PAGE WITH SUPPORT FOR `username` BASED URLS
 import React, { useEffect, useState } from 'react';
 import {
   Container, Card, Image, Modal,
@@ -32,9 +31,8 @@ const ProfilePage = () => {
       try {
         const token = localStorage.getItem('authToken');
         const headers = { Authorization: `Token ${token}` };
-
         const response = username
-          ? await axiosInstance.get(`/api/profiles/username/${username}/`, { headers })
+          ? await axiosInstance.get(`/api/profiles/username/${username}/`, { headers })  // ✅ updated endpoint
           : await axiosInstance.get('/api/profiles/me/', { headers });
 
         setProfile(response.data);

@@ -1,11 +1,38 @@
-.loginContainer {
-  max-width: 400px;
-  margin: 0 auto;
+/* src/styles/LoginPage.module.css */
+
+/* 🟪 Login card transparent indigo background */
+.loginCard {
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 30px;
+  color: white;
+  margin-top: 30px;
 }
 
-.loginBox {
-  background-color: #fff;
-  padding: 30px;
-  border-radius: 20px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+/* ⬜ White input fields */
+.loginCard input {
+  background-color: white;
+  color: #333;
+  border: none;
+  border-radius: 8px;
+}
+
+/* ✨ Input focus */
+.loginCard input:focus {
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.3);
+}
+
+/* ⚪ White login button with indigo text */
+.loginCard .btn-light {
+  background-color: white;
+  color: indigo;
+  border: none;
+  font-weight: 600;
+  border-radius: 8px;
+}
+
+.loginCard .btn-light:hover {
+  background-color: #f1f1f1;
+  color: indigo;
 }

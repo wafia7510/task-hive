@@ -1,0 +1,23 @@
+/* src/styles/FeedPage.module.css */
+
+.heroImage {
+  max-height: 300px;
+  object-fit: cover;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.searchInput {
+  border-radius: 0.25rem;
+}
+
+.cardBody {
+  min-height: 240px;
+}
+
+.cardActions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+}

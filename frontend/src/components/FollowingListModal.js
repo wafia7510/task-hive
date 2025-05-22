@@ -2,12 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { Modal, ListGroup, Button, Spinner, Image, Alert } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { axiosInstance } from '../api/axiosDefaults';
+import { useAuth } from '../contexts/AuthContext';
 
 const FollowingListModal = ({ username, show, onHide, onUnfollow }) => {
   const [followingList, setFollowingList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const { user } = useAuth();
+  const currentUsername = user?.username;
 
+  // Fetch following list on modal open
   useEffect(() => {
     if (show) {
       setLoading(true);
@@ -27,6 +31,7 @@ const FollowingListModal = ({ username, show, onHide, onUnfollow }) => {
     }
   }, [show, username]);
 
+  // Unfollow logic (only for own profile)
   const handleUnfollow = async (targetUsername) => {
     try {
       const token = localStorage.getItem('authToken');
@@ -49,7 +54,7 @@ const FollowingListModal = ({ username, show, onHide, onUnfollow }) => {
       </Modal.Header>
       <Modal.Body>
         {loading ? (
-          <Spinner animation="border" />
+          <Spinner animation="border" aria-label="Loading following list" />
         ) : error ? (
           <Alert variant="danger">{error}</Alert>
         ) : followingList.length === 0 ? (
@@ -60,7 +65,13 @@ const FollowingListModal = ({ username, show, onHide, onUnfollow }) => {
               const displayUsername = user.username || user.user?.username || 'undefined';
               return (
                 <ListGroup.Item key={user.id} className="d-flex align-items-center justify-content-between">
-                  <Link to={`/profiles/${displayUsername}`} className="d-flex align-items-center text-decoration-none" onClick={onHide}>
+                  {/* Profile link */}
+                  <Link
+                    to={`/profiles/${displayUsername}`}
+                    className="d-flex align-items-center text-decoration-none"
+                    onClick={onHide}
+                    aria-label={`View profile of ${displayUsername}`}
+                  >
                     <Image
                       src={user.image || 'https://ui-avatars.com/api/?name=User'}
                       alt={displayUsername}
@@ -71,8 +82,15 @@ const FollowingListModal = ({ username, show, onHide, onUnfollow }) => {
                     />
                     @{displayUsername}
                   </Link>
-                  {displayUsername !== 'undefined' && (
-                    <Button variant="outline-danger" size="sm" onClick={() => handleUnfollow(displayUsername)}>
+
+                  {/* Only allow unfollow if viewing your own profile */}
+                  {username === currentUsername && displayUsername !== 'undefined' && (
+                    <Button
+                      variant="outline-danger"
+                      size="sm"
+                      onClick={() => handleUnfollow(displayUsername)}
+                      aria-label={`Unfollow ${displayUsername}`}
+                    >
                       Unfollow
                     </Button>
                   )}

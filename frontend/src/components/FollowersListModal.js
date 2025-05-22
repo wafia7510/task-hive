@@ -2,12 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { Modal, ListGroup, Button, Spinner, Image, Alert } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { axiosInstance } from '../api/axiosDefaults';
+import { useAuth } from '../contexts/AuthContext';
 
 const FollowersListModal = ({ username, show, onHide, onFollowBack }) => {
   const [followersList, setFollowersList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const { user } = useAuth();
+  const currentUsername = user?.username;
 
+  // Fetch followers when modal opens
   useEffect(() => {
     if (show) {
       setLoading(true);
@@ -27,6 +31,7 @@ const FollowersListModal = ({ username, show, onHide, onFollowBack }) => {
     }
   }, [show, username]);
 
+  // Follow back logic for your own followers
   const handleFollowBack = async (targetUsername) => {
     try {
       const token = localStorage.getItem('authToken');
@@ -53,7 +58,7 @@ const FollowersListModal = ({ username, show, onHide, onFollowBack }) => {
       </Modal.Header>
       <Modal.Body>
         {loading ? (
-          <Spinner animation="border" />
+          <Spinner animation="border" aria-label="Loading followers" />
         ) : error ? (
           <Alert variant="danger">{error}</Alert>
         ) : followersList.length === 0 ? (
@@ -64,7 +69,13 @@ const FollowersListModal = ({ username, show, onHide, onFollowBack }) => {
               const displayUsername = user.username || user.user?.username || 'undefined';
               return (
                 <ListGroup.Item key={user.id} className="d-flex justify-content-between align-items-center">
-                  <Link to={`/profiles/${displayUsername}`} className="d-flex align-items-center text-decoration-none" onClick={onHide}>
+                  {/* Profile link */}
+                  <Link
+                    to={`/profiles/${displayUsername}`}
+                    className="d-flex align-items-center text-decoration-none"
+                    onClick={onHide}
+                    aria-label={`View profile of ${displayUsername}`}
+                  >
                     <Image
                       src={user.image || 'https://ui-avatars.com/api/?name=User'}
                       alt={displayUsername}
@@ -75,15 +86,20 @@ const FollowersListModal = ({ username, show, onHide, onFollowBack }) => {
                     />
                     @{displayUsername}
                   </Link>
-                  {!user.followed_back && displayUsername !== 'undefined' && (
-                    <Button
-                      variant="outline-primary"
-                      size="sm"
-                      onClick={() => handleFollowBack(displayUsername)}
-                    >
-                      Follow Back
-                    </Button>
-                  )}
+
+                  {/* Show Follow Back button only if user is viewing their own profile */}
+                  {username === currentUsername &&
+                    !user.followed_back &&
+                    displayUsername !== 'undefined' && (
+                      <Button
+                        variant="outline-primary"
+                        size="sm"
+                        onClick={() => handleFollowBack(displayUsername)}
+                        aria-label={`Follow back ${displayUsername}`}
+                      >
+                        Follow Back
+                      </Button>
+                    )}
                 </ListGroup.Item>
               );
             })}

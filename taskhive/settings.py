@@ -12,6 +12,11 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 from decouple import config
 import cloudinary
+import dj_database_url
+import os
+from dotenv import load_dotenv
+load_dotenv()  # Load variables from .env
+
 
 
 
@@ -26,7 +31,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-ymb4sq%7m0vbwyknb(-3kzy)bwg1t21=dha0(*d%v_j#*+397t'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -124,10 +129,10 @@ WSGI_APPLICATION = 'taskhive.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",  # Fallback for local dev
+        conn_max_age=600,
+    )
 }
 
 

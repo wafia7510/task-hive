@@ -1,52 +1,47 @@
-/* src/styles/ProfilePage.module.css */
+/* src/styles/Signup.module.css */
 
-.profileImage {
-  border: 3px solid #dee2e6;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  object-fit: cover;
-}
-
-.username {
-  font-weight: 600;
-  color: #2c3e50;
-}
-
-.bioText {
-  color: #5c5c5c;
-  font-style: italic;
-  margin-top: 0.5rem;
-}
-
-.stats {
-  font-size: 0.95rem;
-  margin: 0.4rem 0;
-}
-
-.stats span {
-  color: #0d6efd;
-  cursor: pointer;
-  font-weight: 500;
-}
-
-.editBtn {
-  margin-top: 10px;
-}
-
-.notesSection,
-.tasksSection {
+/* 🟣 Transparent indigo card */
+.card {
+  background-color: rgba(75, 0, 130, 0.4); /* transparent indigo */
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 30px;
+  color: white;
   margin-top: 30px;
 }
 
-.notesSection h5,
-.tasksSection h5 {
-  font-weight: 600;
-  margin-bottom: 1rem;
-  color: #2c3e50;
+/* ✍️ White labels */
+.card label {
+  color: white;
+  font-weight: 500;
 }
 
-.cardFooter {
-  font-size: 0.8rem;
-  background-color: #f8f9fa;
-  border-top: 1px solid #e9ecef;
-  color: #6c757d;
+/* ⬜ White input fields */
+.card input {
+  background-color: white;
+  color: #333;
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+/* ✨ Focus styling */
+.card input:focus {
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.4);
+}
+
+/* ⚪ White button with indigo text */
+.card .btn-primary {
+  background-color: white;
+  color: indigo;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.card .btn-primary:hover {
+  background-color: #e6e6e6;
+  color: indigo;
 }
