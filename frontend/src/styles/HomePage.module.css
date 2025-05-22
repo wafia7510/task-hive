@@ -35,10 +35,40 @@
 
 .cardBox h5 {
   margin-top: 1rem;
-  color: indigo; /* Blue headings */
+  color: indigo; 
 }
 
 .cardBox p {
   font-size: 0.95rem;
   color: #495057;
+}
+.btn-indigo-filled {
+  background-color: indigo;
+  color: white;
+  border: none;
+  padding: 0.5rem 1.2rem;
+  font-weight: 500;
+  border-radius: 6px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-indigo-filled:hover {
+  background-color: #4b0082; /* deeper indigo on hover */
+  color: white;
+}
+
+.btn-indigo-outline {
+  background-color: white;
+  color: indigo;
+  border: 2px solid indigo;
+  padding: 0.5rem 1.2rem;
+  font-weight: 500;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.btn-indigo-outline:hover {
+  background-color: #f5f5f5;
+  color: #4b0082;
+  border-color: #4b0082;
 }

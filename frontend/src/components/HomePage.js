@@ -72,23 +72,22 @@ const HomePage = () => {
       </section>
 
       {/* Call to Action Section */}
-      <section className="text-white text-center py-5" style={{backgroundColor: 'indigo'}}>
+      <section className="text-white text-center py-5" style={{backgroundColor: 'transparent',boxShadow: '0 0 20px rgba(75, 0, 130, 0.5)' // Indigo shadow
+         }}>
         <Container>
-          <h2><strong>Ready to boost your productivity?</strong></h2>
-          <p className="mb-4">Join TaskHive today and take control of your tasks, notes, and learning journey.</p>
-          <Button variant="light" href="/register" className="me-3">Get Started</Button>
-          <Button variant="outline-light" href="/features">View Features</Button>
-        </Container>
+            <h2 style={{ color: 'indigo' }}>
+              <strong>Ready to boost your productivity?</strong>
+            </h2>
+            <p className="mb-4" style={{ color: 'black' }}>
+              Join TaskHive today and take control of your tasks, notes, and learning journey.
+            </p>
+            <Button href="/register" className="btn-indigo-filled me-3">Get Started</Button>
+            
+          </Container>
+
       </section>
 
-      {/* Footer */}
-      <footer className="text-white text-center py-3" style={{ backgroundColor: 'indigo' }}>
-            <Container>
-                <small>
-                    © 2025 TaskHive | <a href="/" className="text-white">Contact</a> | <a href="/" className="text-white">Terms</a> | <a href="/" className="text-white">Privacy</a>
-                </small>
-            </Container>
-</footer>
+      
 
     </>
   );

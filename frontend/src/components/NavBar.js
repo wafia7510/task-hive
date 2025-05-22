@@ -1,4 +1,3 @@
-// src/components/NavBar.js
 import React from 'react';
 import { Navbar, Nav, Container, Button } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
@@ -26,6 +25,8 @@ const NavBar = () => {
                 <Nav.Link as={Link} to="/dashboard" className={styles.navLink}>Dashboard</Nav.Link>
                 <Nav.Link as={Link} to="/tasks" className={styles.navLink}>Tasks</Nav.Link>
                 <Nav.Link as={Link} to="/notes" className={styles.navLink}>Notes</Nav.Link>
+                <Nav.Link as={Link} to="/feed" className={styles.navLink}>Feed</Nav.Link> {/* ✅ Feed link added */}
+                <Nav.Link as={Link} to="/explore" className={styles.navLink}>Explore</Nav.Link>
                 <Nav.Link as={Link} to="/profile" className={styles.navLink}>Profile</Nav.Link>
                 <Button
                   onClick={handleLogout}

@@ -2,8 +2,10 @@ from rest_framework import generics, permissions, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404
 from .models import Follow
 from .serializers import FollowUserSerializer
+
 
 class FollowUserView(APIView):
     """
@@ -34,27 +36,29 @@ class FollowUserView(APIView):
             return Response({"detail": "User not found."}, status=404)
 
 
+# views.py
+
 class FollowerListView(generics.ListAPIView):
-    """
-    GET: List users who follow the given username.
-    """
     serializer_class = FollowUserSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         username = self.kwargs['username']
         user = User.objects.get(username=username)
         return User.objects.filter(following__following=user)
 
+    def get_serializer_context(self):
+        return {'request': self.request}
+
 
 class FollowingListView(generics.ListAPIView):
-    """
-    GET: List users that the given username is following.
-    """
     serializer_class = FollowUserSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         username = self.kwargs['username']
         user = User.objects.get(username=username)
         return User.objects.filter(followers__follower=user)
+
+    def get_serializer_context(self):
+        return {'request': self.request}
