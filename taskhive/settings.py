@@ -16,7 +16,7 @@ DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
-    os.environ.get('HEROKU_APP_HOST', ''),  # e.g. taskhive.herokuapp.com
+    os.environ.get('HEROKU_APP_HOST', ''),  # e.g., taskhive12-a2ed93813c61.herokuapp.com
 ]
 
 # APPLICATIONS
@@ -92,7 +92,7 @@ ROOT_URLCONF = 'taskhive.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'taskhive' / 'static'],  # ✅ Points to React index.html location
+        'DIRS': [BASE_DIR / 'taskhive' / 'static'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -131,7 +131,7 @@ USE_TZ = True
 # STATIC FILES
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    BASE_DIR / 'taskhive' / 'static',  # ✅ Correct path to React build files
+    BASE_DIR / 'taskhive' / 'static',
 ]
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
@@ -146,11 +146,23 @@ cloudinary.config(
     api_secret=config('CLOUDINARY_API_SECRET')
 )
 
-# CORS
+# CORS & CSRF SETTINGS
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
 ]
-CORS_ALLOW_ALL_ORIGINS = True  # Only use in development
+CORS_ALLOW_ALL_ORIGINS = DEBUG  # Only allow all in dev
+CORS_ALLOW_CREDENTIALS = True
+
+# Trust your Heroku app for CSRF cookies
+CSRF_TRUSTED_ORIGINS = [
+    'https://taskhive12-a2ed93813c61.herokuapp.com',
+]
+
+# Secure CSRF & session cookies for production
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_SAMESITE = 'Lax'
 
 # EMAIL
 ACCOUNT_EMAIL_VERIFICATION = "none"

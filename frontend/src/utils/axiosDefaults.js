@@ -1,9 +1,6 @@
 import axios from 'axios';
 
-export const axiosReq = axios.create({
-  baseURL: 'http://localhost:8000/api',
+export const axiosInstance = axios.create({
+  baseURL: process.env.REACT_APP_API_URL || '', // ✅ no /api prefix here
   withCredentials: true,
-  headers: {
-    'Content-Type': 'application/json',
-  },
 });
