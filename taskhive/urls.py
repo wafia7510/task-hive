@@ -15,19 +15,28 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
+from django.views.generic import TemplateView
+from django.views.decorators.cache import never_cache
+index_view = never_cache(TemplateView.as_view(template_name="index.html"))
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('dj-rest-auth/', include('dj_rest_auth.urls')),  # login, logout, password change
-    path('dj-rest-auth/registration/', include('dj_rest_auth.registration.urls')), 
+
+    # API endpoints
     path('api/accounts/', include('accounts.urls')),
     path('api/profiles/', include('profiles.urls')),
     path('api/follows/', include('follows.urls')),
     path('api/tasks/', include('tasks.urls')),
     path('api/notes/', include('notes.urls')),
     path('api/tags/', include('tags.urls')),
-    path('api/', include('comments.urls')), 
+    path('api/', include('comments.urls')),
     path('api/likes/', include('likes.urls')),
+    path('dj-rest-auth/', include('dj_rest_auth.urls')),
+    path('dj-rest-auth/registration/', include('dj_rest_auth.registration.urls')),
+
+    # Serve React frontend
+    path('', index_view),
+    re_path(r'^(?:.*)/?$', index_view),
 ]

@@ -16,7 +16,7 @@ DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
-    os.environ.get('HEROKU_APP_HOST', ''),  # e.g., taskhive.herokuapp.com
+    os.environ.get('HEROKU_APP_HOST', ''),  # e.g. taskhive.herokuapp.com
 ]
 
 # APPLICATIONS
@@ -88,10 +88,11 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'taskhive.urls'
 
+# TEMPLATES
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'accounts' / 'templates'],  # ✅ For serving React build
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -127,14 +128,18 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# STATIC FILES (CSS/JS)
+# STATIC FILES
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_DIRS = [
+    BASE_DIR / 'accounts' / 'templates' / 'static',
+]
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# MEDIA FILES (Images/Videos)
+# MEDIA FILES
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
+# CLOUDINARY CONFIG
 cloudinary.config(
     cloud_name=config('CLOUD_NAME'),
     api_key=config('CLOUDINARY_API_KEY'),
@@ -145,7 +150,7 @@ cloudinary.config(
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
 ]
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = True  # Only use in development
 
 # EMAIL
 ACCOUNT_EMAIL_VERIFICATION = "none"
