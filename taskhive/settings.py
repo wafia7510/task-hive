@@ -11,7 +11,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'unsafe-dev-secret')
-DEBUG = True     #os.environ.get('DJANGO_DEBUG', '') != 'False'
+DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 
 ALLOWED_HOSTS = [
     'localhost',
@@ -150,7 +150,9 @@ cloudinary.config(
 # CORS & CSRF SETTINGS
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
+    "https://taskhive12-a2ed93813c61.herokuapp.com",  #  ADD THIS
 ]
+
 CORS_ALLOW_ALL_ORIGINS = DEBUG
 CORS_ALLOW_CREDENTIALS = True
 
@@ -158,10 +160,11 @@ CSRF_TRUSTED_ORIGINS = [
     'https://taskhive12-a2ed93813c61.herokuapp.com',
 ]
 
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = not DEBUG
+SESSION_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SAMESITE = 'Lax'
 SESSION_COOKIE_SAMESITE = 'Lax'
+
 
 # EMAIL
 ACCOUNT_EMAIL_VERIFICATION = "none"
