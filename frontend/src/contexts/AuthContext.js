@@ -1,5 +1,3 @@
-// src/contexts/AuthContext.js
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { axiosInstance } from '../api/axiosDefaults';
 
@@ -11,7 +9,7 @@ export function AuthProvider({ children }) {
     return storedUser ? JSON.parse(storedUser) : null;
   });
 
-  // ✅ Fetch CSRF token once on load
+  // ✅ Fetch CSRF token on load
   useEffect(() => {
     axiosInstance.get('/dj-rest-auth/csrf/').catch((err) => {
       console.warn('CSRF fetch failed:', err);
@@ -20,7 +18,7 @@ export function AuthProvider({ children }) {
 
   const login = async (formData) => {
     try {
-      const response = await axiosInstance.post('/accounts/login/', {
+      const response = await axiosInstance.post('/dj-rest-auth/login/', {
         username: formData.username,
         password: formData.password,
       });
@@ -35,13 +33,16 @@ export function AuthProvider({ children }) {
       return { success: true };
     } catch (error) {
       console.error('Login failed:', error.response || error);
-      return { success: false, message: error.response?.data || 'Login failed' };
+      return {
+        success: false,
+        message: error.response?.data?.non_field_errors?.[0] || 'Login failed',
+      };
     }
   };
 
   const signup = async (formData) => {
     try {
-      const response = await axiosInstance.post('/accounts/register/', {
+      const response = await axiosInstance.post('/dj-rest-auth/registration/', {
         first_name: formData.firstName,
         last_name: formData.lastName,
         email: formData.email,
@@ -53,7 +54,10 @@ export function AuthProvider({ children }) {
       return { success: true, data: response.data };
     } catch (error) {
       console.error('Signup failed:', error.response || error);
-      return { success: false, message: error.response?.data || 'Signup failed' };
+      return {
+        success: false,
+        message: error.response?.data?.non_field_errors?.[0] || 'Signup failed',
+      };
     }
   };
 
