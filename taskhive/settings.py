@@ -76,7 +76,7 @@ REST_AUTH_REGISTER_SERIALIZERS = {
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # ✅ WhiteNoise for static files
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'allauth.account.middleware.AccountMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -88,11 +88,11 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'taskhive.urls'
 
-# TEMPLATES
+# TEMPLATES (React build index.html)
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'taskhive' / 'static'],
+        'DIRS': [BASE_DIR / 'frontend' / 'build'],  # ✅ React build output
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -131,7 +131,8 @@ USE_TZ = True
 # STATIC FILES
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    BASE_DIR / 'taskhive' / 'static',
+    BASE_DIR / 'frontend' / 'build' / 'static',  # ✅ React static files
+    BASE_DIR / 'taskhive' / 'static',           # (if used for custom styles)
 ]
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
@@ -150,15 +151,13 @@ cloudinary.config(
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
 ]
-CORS_ALLOW_ALL_ORIGINS = DEBUG  # Only allow all in dev
+CORS_ALLOW_ALL_ORIGINS = DEBUG
 CORS_ALLOW_CREDENTIALS = True
 
-# Trust your Heroku app for CSRF cookies
 CSRF_TRUSTED_ORIGINS = [
     'https://taskhive12-a2ed93813c61.herokuapp.com',
 ]
 
-# Secure CSRF & session cookies for production
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SAMESITE = 'Lax'

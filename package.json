@@ -1,0 +1,8 @@
+{
+  "name": "taskhive",
+  "version": "1.0.0",
+  "description": "Combined Django + React deployment",
+  "scripts": {
+    "heroku-postbuild": "cd frontend && npm install && npm run build"
+  }
+}
