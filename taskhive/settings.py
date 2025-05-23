@@ -92,7 +92,7 @@ ROOT_URLCONF = 'taskhive.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'accounts' / 'templates'],  # ✅ For serving React build
+        'DIRS': [BASE_DIR / 'taskhive' / 'static'],  # ✅ Points to React index.html location
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -130,10 +130,10 @@ USE_TZ = True
 
 # STATIC FILES
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [
-    BASE_DIR / 'accounts' / 'templates' / 'static',
+    BASE_DIR / 'taskhive' / 'static',  # ✅ Correct path to React build files
 ]
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # MEDIA FILES
