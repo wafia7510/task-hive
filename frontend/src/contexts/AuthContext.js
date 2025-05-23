@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import Cookies from 'js-cookie';
 import { axiosInstance } from '../api/axiosDefaults';
 
 const AuthContext = createContext();
@@ -9,19 +10,27 @@ export function AuthProvider({ children }) {
     return storedUser ? JSON.parse(storedUser) : null;
   });
 
-  // ✅ Fetch CSRF token on load
+  // ✅ Fetch CSRF cookie on initial load
   useEffect(() => {
-    axiosInstance.get('/dj-rest-auth/csrf/').catch((err) => {
+    axiosInstance.get('/dj-rest-auth/login/').catch((err) => {
       console.warn('CSRF fetch failed:', err);
     });
   }, []);
 
   const login = async (formData) => {
     try {
-      const response = await axiosInstance.post('/dj-rest-auth/login/', {
-        username: formData.username,
-        password: formData.password,
-      });
+      const response = await axiosInstance.post(
+        '/dj-rest-auth/login/',
+        {
+          username: formData.username,
+          password: formData.password,
+        },
+        {
+          headers: {
+            'X-CSRFToken': Cookies.get('csrftoken'), // ✅ Dynamically read CSRF token
+          },
+        }
+      );
 
       const token = response.data.key;
       const userData = response.data.user || { username: formData.username };
@@ -42,14 +51,22 @@ export function AuthProvider({ children }) {
 
   const signup = async (formData) => {
     try {
-      const response = await axiosInstance.post('/dj-rest-auth/registration/', {
-        first_name: formData.firstName,
-        last_name: formData.lastName,
-        email: formData.email,
-        username: formData.username,
-        password1: formData.password,
-        password2: formData.password,
-      });
+      const response = await axiosInstance.post(
+        '/dj-rest-auth/registration/',
+        {
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          email: formData.email,
+          username: formData.username,
+          password1: formData.password,
+          password2: formData.password,
+        },
+        {
+          headers: {
+            'X-CSRFToken': Cookies.get('csrftoken'), // ✅ Dynamically read CSRF token
+          },
+        }
+      );
 
       return { success: true, data: response.data };
     } catch (error) {
