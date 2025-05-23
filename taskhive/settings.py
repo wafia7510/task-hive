@@ -149,21 +149,22 @@ cloudinary.config(
 
 # CORS & CSRF SETTINGS
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "https://taskhive12-a2ed93813c61.herokuapp.com",  #  ADD THIS
+    "https://taskhive12-a2ed93813c61.herokuapp.com",  
 ]
 
-CORS_ALLOW_ALL_ORIGINS = DEBUG
 CORS_ALLOW_CREDENTIALS = True
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_SAMESITE = 'Lax'
+
 
 CSRF_TRUSTED_ORIGINS = [
     'https://taskhive12-a2ed93813c61.herokuapp.com',
 ]
 
-CSRF_COOKIE_SECURE = not DEBUG
-SESSION_COOKIE_SECURE = not DEBUG
-CSRF_COOKIE_SAMESITE = 'Lax'
-SESSION_COOKIE_SAMESITE = 'Lax'
+
+
 
 
 # EMAIL
