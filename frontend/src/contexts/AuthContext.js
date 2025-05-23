@@ -13,14 +13,14 @@ export function AuthProvider({ children }) {
 
   // ✅ Fetch CSRF token once on load
   useEffect(() => {
-    axiosInstance.get('/api/dj-rest-auth/csrf/').catch((err) => {
+    axiosInstance.get('/dj-rest-auth/csrf/').catch((err) => {
       console.warn('CSRF fetch failed:', err);
     });
   }, []);
 
   const login = async (formData) => {
     try {
-      const response = await axiosInstance.post('/api/accounts/login/', {
+      const response = await axiosInstance.post('/accounts/login/', {
         username: formData.username,
         password: formData.password,
       });
@@ -41,7 +41,7 @@ export function AuthProvider({ children }) {
 
   const signup = async (formData) => {
     try {
-      const response = await axiosInstance.post('/api/accounts/register/', {
+      const response = await axiosInstance.post('/accounts/register/', {
         first_name: formData.firstName,
         last_name: formData.lastName,
         email: formData.email,
