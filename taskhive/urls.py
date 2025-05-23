@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path, include, re_path
 from django.views.generic import TemplateView
 from django.views.decorators.cache import never_cache
+from .views import FrontendAppView
 index_view = never_cache(TemplateView.as_view(template_name="index.html"))
 
 
@@ -37,6 +38,6 @@ urlpatterns = [
     path('dj-rest-auth/registration/', include('dj_rest_auth.registration.urls')),
 
     # Serve React frontend
-    path('', index_view),
-    re_path(r'^(?:.*)/?$', index_view),
+    
+    re_path(r'^.*$', FrontendAppView.as_view()),
 ]

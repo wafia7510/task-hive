@@ -88,14 +88,15 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'taskhive.urls'
 
-# TEMPLATES (React build index.html)
+# TEMPLATES (React frontend)
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'frontend' / 'build'],  # ✅ React build output
+        'DIRS': [BASE_DIR / 'frontend' / 'build'],  # ✅ Serve React index.html
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
@@ -128,19 +129,17 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# STATIC FILES
+# STATIC FILES (React Build + Whitenoise)
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    BASE_DIR / 'frontend' / 'build' / 'static',  # ✅ React static files
-           
+    BASE_DIR / 'frontend' / 'build' / 'static',  # ✅ React static assets
 ]
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# MEDIA FILES
+# MEDIA FILES (Cloudinary)
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
-# CLOUDINARY CONFIG
 cloudinary.config(
     cloud_name=config('CLOUD_NAME'),
     api_key=config('CLOUDINARY_API_KEY'),
@@ -158,14 +157,9 @@ SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SAMESITE = 'Lax'
 SESSION_COOKIE_SAMESITE = 'Lax'
 
-
 CSRF_TRUSTED_ORIGINS = [
     'https://taskhive12-a2ed93813c61.herokuapp.com',
 ]
-
-
-
-
 
 # EMAIL
 ACCOUNT_EMAIL_VERIFICATION = "none"
