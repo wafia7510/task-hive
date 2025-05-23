@@ -132,7 +132,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'frontend' / 'build' / 'static',  # ✅ React static files
-    BASE_DIR / 'taskhive' / 'static',           # (if used for custom styles)
+           
 ]
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
