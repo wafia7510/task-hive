@@ -10,15 +10,16 @@ export function AuthProvider({ children }) {
     return storedUser ? JSON.parse(storedUser) : null;
   });
 
-  // ✅ Fetch CSRF cookie on initial load
+  // ✅ Correct CSRF fetch using a safe GET route
   useEffect(() => {
-    axiosInstance.get('/dj-rest-auth/login/').catch((err) => {
-      console.warn('CSRF fetch failed:', err);
-    });
+    axiosInstance.get('/api/notes/')
+      .then(() => console.log("CSRF token set"))
+      .catch((err) => console.warn("CSRF fetch failed:", err));
   }, []);
 
   const login = async (formData) => {
     try {
+      console.log("Login CSRF token:", Cookies.get('csrftoken')); // Debug log
       const response = await axiosInstance.post(
         '/dj-rest-auth/login/',
         {
@@ -27,7 +28,7 @@ export function AuthProvider({ children }) {
         },
         {
           headers: {
-            'X-CSRFToken': Cookies.get('csrftoken'), // ✅ Dynamically read CSRF token
+            'X-CSRFToken': Cookies.get('csrftoken'), // ✅ Read token dynamically
           },
         }
       );
@@ -51,6 +52,7 @@ export function AuthProvider({ children }) {
 
   const signup = async (formData) => {
     try {
+      console.log("Signup CSRF token:", Cookies.get('csrftoken')); // Debug log
       const response = await axiosInstance.post(
         '/dj-rest-auth/registration/',
         {
@@ -63,7 +65,7 @@ export function AuthProvider({ children }) {
         },
         {
           headers: {
-            'X-CSRFToken': Cookies.get('csrftoken'), // ✅ Dynamically read CSRF token
+            'X-CSRFToken': Cookies.get('csrftoken'), // ✅ Read token dynamically
           },
         }
       );
