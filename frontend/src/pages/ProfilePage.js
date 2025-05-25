@@ -38,6 +38,9 @@ const ProfilePage = () => {
         setProfile(response.data);
         setEditForm({ bio: response.data.bio || '', image: '' });
         setImagePreview(null);
+        console.log('Raw profile.image:', response.data.image);
+        console.log('Final image URL:', getFullImageUrl(response.data.image));
+
       } catch (err) {
         console.error(err);
         setError('Could not fetch profile.');
@@ -119,10 +122,12 @@ const ProfilePage = () => {
 
   const getFullImageUrl = (path) => {
     if (!path) return null;
-    return path.startsWith('http')
-      ? path
-      : `${CLOUDINARY_BASE_URL}${path}`;
+    if (path.startsWith('http')) return path;
+
+    // ✅ Strip redundant prefix if included in path
+    return `${CLOUDINARY_BASE_URL}${path.replace(/^image\/upload\//, '')}`;
 };
+
 
 
   if (!loading && !profile) {
