@@ -60,17 +60,18 @@ const ExploreProfilesPage = () => {
               <Col key={profile.id}>
                 <Card className="text-center h-100 p-3 shadow-sm">
                   <Card.Img
-                    variant="top"
-                    src={getFullImageUrl(profile.image)}
-                    style={{
-                      width: '100px',
-                      height: '100px',
-                      borderRadius: '50%',
-                      objectFit: 'cover',
-                      margin: '0 auto',
-                    }}
-                    alt={`${profile.username}'s avatar`}
+                      variant="top"
+                      src={profile.image || 'https://via.placeholder.com/100'}
+                      style={{
+                        width: '100px',
+                        height: '100px',
+                        borderRadius: '50%',
+                        objectFit: 'cover',
+                        margin: '0 auto',
+                      }}
+                      alt={`${profile.username}'s avatar`}
                   />
+
                   <Card.Body>
                     <Card.Title>@{profile.username}</Card.Title>
                     <Link to={`/profiles/${profile.username}`}>
