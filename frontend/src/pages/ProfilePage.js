@@ -119,9 +119,11 @@ const ProfilePage = () => {
 
   const getFullImageUrl = (path) => {
     if (!path) return null;
-    if (path.startsWith('http')) return path;
-    return `${CLOUDINARY_BASE_URL}${path.replace(/^image\/upload\//, '')}`;
-  };
+    return path.startsWith('http')
+      ? path
+      : `${CLOUDINARY_BASE_URL}${path}`;
+};
+
 
   if (!loading && !profile) {
     return (
@@ -159,6 +161,7 @@ const ProfilePage = () => {
                 alt="Profile"
                 className={styles.profileImage}
               />
+
               <h4 className={`mt-3 ${styles.username}`}>@{profile.username}</h4>
               <p className={styles.bioText}>{profile.bio || 'No bio added.'}</p>
 
