@@ -4,12 +4,12 @@ import { Link } from 'react-router-dom';
 import { axiosInstance } from '../api/axiosDefaults';
 import NavBar from '../components/NavBar';
 
-const CLOUDINARY_BASE = process.env.REACT_APP_CLOUDINARY_BASE_URL || 'https://via.placeholder.com';
+const CLOUDINARY_BASE = process.env.REACT_APP_CLOUDINARY_BASE_URL || 'https://via.placeholder.com/';
 
 const getFullImageUrl = (path) => {
   if (!path) return 'https://via.placeholder.com/100';
   if (path.startsWith('http')) return path;
-  return `${CLOUDINARY_BASE}${path}`; // no slash added here because env already ends with '/'
+  return `${CLOUDINARY_BASE}${path}`;
 };
 
 const ExploreProfilesPage = () => {
@@ -48,17 +48,18 @@ const ExploreProfilesPage = () => {
               <Col key={profile.id}>
                 <Card className="text-center h-100 p-3 shadow-sm">
                   <Card.Img
-                    variant="top"
-                    src={getFullImageUrl(profile.image)}
-                    style={{
-                      width: '100px',
-                      height: '100px',
-                      borderRadius: '50%',
-                      objectFit: 'cover',
-                      margin: '0 auto',
-                    }}
-                    alt={`${profile.username}'s avatar`}
+                      variant="top"
+                      src={getFullImageUrl(profile.image)}
+                      style={{
+                        width: '100px',
+                        height: '100px',
+                        borderRadius: '50%',
+                        objectFit: 'cover',
+                        margin: '0 auto',
+                      }}
+                      alt={`${profile.username}'s avatar`}
                   />
+
                   <Card.Body>
                     <Card.Title>@{profile.username}</Card.Title>
                     <Link to={`/profiles/${profile.username}`}>
