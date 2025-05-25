@@ -4,11 +4,16 @@ import { Link } from 'react-router-dom';
 import { axiosInstance } from '../api/axiosDefaults';
 import NavBar from '../components/NavBar';
 
-const CLOUDINARY_BASE_URL = process.env.REACT_APP_CLOUDINARY_BASE_URL || 'https://res.cloudinary.com/dotdnopux/';
-
 const ExploreProfilesPage = () => {
   const [profiles, setProfiles] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // ✅ Helper to build full Cloudinary URL safely
+  const getFullImageUrl = (path) => {
+    if (!path) return 'https://via.placeholder.com/100';
+    if (path.startsWith('http')) return path;
+    return `https://res.cloudinary.com/dotdnopux/image/upload/${path}`;
+  };
 
   useEffect(() => {
     const fetchProfiles = async () => {
@@ -27,12 +32,6 @@ const ExploreProfilesPage = () => {
 
     fetchProfiles();
   }, []);
-
-  const getFullImageUrl = (path) => {
-    if (!path) return 'https://via.placeholder.com/100';
-    if (path.startsWith('http')) return path;
-    return `${CLOUDINARY_BASE_URL}image/upload/${path}`;
-  };
 
   if (!loading && profiles.length === 0) {
     return (
@@ -57,7 +56,7 @@ const ExploreProfilesPage = () => {
           </div>
         ) : (
           <Row xs={1} sm={2} md={3} className="g-4">
-            {profiles.map(profile => (
+            {profiles.map((profile) => (
               <Col key={profile.id}>
                 <Card className="text-center h-100 p-3 shadow-sm">
                   <Card.Img
