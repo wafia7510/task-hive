@@ -4,17 +4,7 @@ import { Link } from 'react-router-dom';
 import { axiosInstance } from '../api/axiosDefaults';
 import NavBar from '../components/NavBar';
 
-// ✅ Cloudinary base URL from .env
-const CLOUDINARY_BASE_URL = process.env.REACT_APP_CLOUDINARY_BASE_URL || 'https://res.cloudinary.com/dotdnopux/image/upload/';
-
-// ✅ STEP 1: Add helper function at the top
-const getFullImageUrl = (path) => {
-  if (!path) return 'https://via.placeholder.com/100';
-  if (path.startsWith('http')) return path;
-
-  const cleanedPath = path.replace(/^image\/upload\//, '');
-  return `${CLOUDINARY_BASE_URL}image/upload/${cleanedPath}`;
-};
+const CLOUDINARY_BASE_URL = process.env.REACT_APP_CLOUDINARY_BASE_URL || 'https://res.cloudinary.com/dotdnopux/';
 
 const ExploreProfilesPage = () => {
   const [profiles, setProfiles] = useState([]);
@@ -37,6 +27,12 @@ const ExploreProfilesPage = () => {
 
     fetchProfiles();
   }, []);
+
+  const getFullImageUrl = (path) => {
+    if (!path) return 'https://via.placeholder.com/100';
+    if (path.startsWith('http')) return path;
+    return `${CLOUDINARY_BASE_URL}image/upload/${path}`;
+  };
 
   if (!loading && profiles.length === 0) {
     return (
@@ -64,7 +60,6 @@ const ExploreProfilesPage = () => {
             {profiles.map(profile => (
               <Col key={profile.id}>
                 <Card className="text-center h-100 p-3 shadow-sm">
-                  {/* ✅ STEP 2: Replace image src logic */}
                   <Card.Img
                     variant="top"
                     src={getFullImageUrl(profile.image)}
