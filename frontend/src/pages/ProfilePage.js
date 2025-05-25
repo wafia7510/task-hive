@@ -124,9 +124,11 @@ const ProfilePage = () => {
     if (!path) return null;
     if (path.startsWith('http')) return path;
 
-    // ✅ Strip redundant prefix if included in path
-    return `${CLOUDINARY_BASE_URL}${path.replace(/^image\/upload\//, '')}`;
+    // ✅ Ensure Cloudinary path is correctly prefixed
+    const cleanedPath = path.replace(/^image\/upload\//, '');
+    return `https://res.cloudinary.com/dotdnopux/image/upload/${cleanedPath}`;
 };
+
 
 
 
