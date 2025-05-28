@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
 import { axiosInstance } from '../api/axiosDefaults';
-
-const AuthContext = createContext();
+import PropTypes from 'prop-types';
+export const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
@@ -97,3 +97,6 @@ export function AuthProvider({ children }) {
 export function useAuth() {
   return useContext(AuthContext);
 }
+AuthProvider.propTypes = {
+  children: PropTypes.node.isRequired,
+};

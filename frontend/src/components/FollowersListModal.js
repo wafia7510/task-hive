@@ -3,6 +3,7 @@ import { Modal, ListGroup, Button, Spinner, Image, Alert } from 'react-bootstrap
 import { Link } from 'react-router-dom';
 import { axiosInstance } from '../api/axiosDefaults';
 import { useAuth } from '../contexts/AuthContext';
+import PropTypes from 'prop-types';
 
 const FollowersListModal = ({ username, show, onHide, onFollowBack }) => {
   const [followersList, setFollowersList] = useState([]);
@@ -108,6 +109,12 @@ const FollowersListModal = ({ username, show, onHide, onFollowBack }) => {
       </Modal.Body>
     </Modal>
   );
+};
+FollowersListModal.propTypes = {
+  username: PropTypes.string.isRequired,
+  show: PropTypes.bool.isRequired,
+  onHide: PropTypes.func.isRequired,
+  onFollowBack: PropTypes.func.isRequired,
 };
 
 export default FollowersListModal;

@@ -12,7 +12,6 @@ import {
   InputGroup,
   Button,
 } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
 import { axiosInstance } from '../api/axiosDefaults';
 import NavBar from '../components/NavBar';
 import { FaUsers, FaSearch } from 'react-icons/fa';

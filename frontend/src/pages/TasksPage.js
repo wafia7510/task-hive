@@ -3,13 +3,13 @@ import {
   Container, Row, Col, Card, Button, Form, Alert, Badge, Modal,
 } from 'react-bootstrap';
 import { axiosInstance } from '../api/axiosDefaults';
-import { useAuth } from '../contexts/AuthContext';
+//import { useAuth } from '../contexts/AuthContext';
 import NavBar from '../components/NavBar';
 import styles from '../styles/TasksPage.module.css';
 import taskBanner from '../assets/task_banner.jpg'; // 🔁 Add your image in public/assets or src/assets
 
 const TasksPage = () => {
-  const { user } = useAuth();
+  
   const [tasks, setTasks] = useState([]);
   const [form, setForm] = useState({ title: '', description: '', priority: 'medium', status: 'todo', due_date: '' });
   const [editTaskId, setEditTaskId] = useState(null);

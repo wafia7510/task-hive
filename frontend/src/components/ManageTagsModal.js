@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Modal, Form, Button, InputGroup } from 'react-bootstrap';
 import { axiosInstance } from '../api/axiosDefaults';
-
+import PropTypes from 'prop-types';
 const ManageTagsModal = ({ show, onHide, tags, setTags, notes }) => {
   const [tagInput, setTagInput] = useState('');
   const [filter, setFilter] = useState('');
@@ -122,5 +122,11 @@ const ManageTagsModal = ({ show, onHide, tags, setTags, notes }) => {
     </Modal>
   );
 };
-
+ManageTagsModal.propTypes = {
+  show: PropTypes.bool.isRequired,
+  onHide: PropTypes.func.isRequired,
+  tags: PropTypes.array.isRequired,
+  setTags: PropTypes.func.isRequired,
+  notes: PropTypes.array.isRequired,
+};
 export default ManageTagsModal;

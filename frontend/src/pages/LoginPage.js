@@ -91,7 +91,7 @@ const LoginPage = () => {
 
                 {/* 👤 Register link */}
                 <div className="mt-3 text-center">
-                  <span className="text-white">Don't have an account? </span>
+                  <span className="text-white">Don&apos;t have an account?</span>
                   <Link to="/register" className="text-white text-decoration-underline">
                     Create Account
                   </Link>

@@ -16,7 +16,7 @@ DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
-    os.environ.get('HEROKU_APP_HOST', ''),  # e.g., taskhive12-a2ed93813c61.herokuapp.com
+    'taskhive12-a2ed93813c61.herokuapp.com',
 ]
 
 # APPLICATIONS

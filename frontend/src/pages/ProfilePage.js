@@ -38,8 +38,8 @@ const ProfilePage = () => {
         setProfile(response.data);
         setEditForm({ bio: response.data.bio || '', image: '' });
         setImagePreview(null);
-        console.log('Raw profile.image:', response.data.image);
-        console.log('Final image URL:', getFullImageUrl(response.data.image));
+        //console.log('Raw profile.image:', response.data.image);
+        //console.log('Final image URL:', getFullImageUrl(response.data.image));
 
       } catch (err) {
         console.error(err);
@@ -126,7 +126,8 @@ const ProfilePage = () => {
 
     // ✅ Ensure Cloudinary path is correctly prefixed
     const cleanedPath = path.replace(/^image\/upload\//, '');
-    return `https://res.cloudinary.com/dotdnopux/image/upload/${cleanedPath}`;
+    return `${CLOUDINARY_BASE_URL}${cleanedPath}`;
+
 };
 
 

@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Form, Button } from 'react-bootstrap';
 import { axiosInstance } from '../api/axiosDefaults';
-
+import PropTypes from 'prop-types'; 
 const CommentsModal = ({ note, show, onHide }) => {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
@@ -78,7 +78,7 @@ const CommentsModal = ({ note, show, onHide }) => {
   return (
     <Modal show={show} onHide={onHide}>
       <Modal.Header closeButton>
-        <Modal.Title>Comments on "{note?.title}"</Modal.Title>
+        <Modal.Title>Comments on &quot;{note?.title}&quot;</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <p><strong>Content:</strong> {note?.content}</p>
@@ -125,6 +125,11 @@ const CommentsModal = ({ note, show, onHide }) => {
       </Modal.Body>
     </Modal>
   );
+};
+CommentsModal.propTypes = {
+  note: PropTypes.object.isRequired,
+  show: PropTypes.bool.isRequired,
+  onHide: PropTypes.func.isRequired,
 };
 
 export default CommentsModal;

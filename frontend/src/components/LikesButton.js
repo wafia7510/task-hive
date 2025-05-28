@@ -3,6 +3,7 @@ import { Button } from 'react-bootstrap';
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import { axiosInstance } from '../api/axiosDefaults';
 import { useAuth } from '../contexts/AuthContext';
+import PropTypes from 'prop-types';
 
 const LikesButton = ({ noteId, initialLikesCount = 0, onLikeChange }) => {
   const [liked, setLiked] = useState(false);
@@ -66,5 +67,9 @@ const LikesButton = ({ noteId, initialLikesCount = 0, onLikeChange }) => {
     </Button>
   );
 };
-
+LikesButton.propTypes = {
+  noteId: PropTypes.number.isRequired,
+  initialLikesCount: PropTypes.number.isRequired,
+  onLikeChange: PropTypes.func.isRequired,
+};
 export default LikesButton;
