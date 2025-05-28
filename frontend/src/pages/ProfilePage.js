@@ -123,19 +123,25 @@ const ProfilePage = () => {
   const getFullImageUrl = (path) => {
   if (!path) return null;
 
-  //  a complete Cloudinary URL
-  if (path.startsWith('http') || path.startsWith('https')) {
+  // Full URL already
+  if (typeof path === 'string' && (path.startsWith('http') || path.startsWith('https'))) {
     return path;
   }
 
-  // Common case: Cloudinary returns relative media path
+  // Relative Cloudinary path (e.g. image/upload/xyz.jpg)
+  if (path.includes('image/upload/')) {
+    return `https://res.cloudinary.com/dotdnopux/${path}`;
+  }
+
+  // Legacy local media path (only in dev/local)
   if (path.includes('media/')) {
     return `${CLOUDINARY_BASE_URL}${path.split('media/')[1]}`;
   }
 
-  // ✅ Fallback for legacy paths
+  // Final fallback
   return `${CLOUDINARY_BASE_URL}${path.replace(/^image\/upload\//, '')}`;
 };
+
 
 
 
