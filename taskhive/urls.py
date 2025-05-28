@@ -18,13 +18,14 @@ from django.contrib import admin
 from django.urls import path, include, re_path
 from django.views.generic import TemplateView
 from django.views.decorators.cache import never_cache
-from .views import FrontendAppView
+from .views import FrontendAppView, get_csrf_token
+
 index_view = never_cache(TemplateView.as_view(template_name="index.html"))
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-
+    
     # API endpoints
     path('api/accounts/', include('accounts.urls')),
     path('api/profiles/', include('profiles.urls')),
@@ -32,12 +33,12 @@ urlpatterns = [
     path('api/tasks/', include('tasks.urls')),
     path('api/notes/', include('notes.urls')),
     path('api/tags/', include('tags.urls')),
-    path('api/', include('comments.urls')),
+    path('api/comments/', include('comments.urls')),
     path('api/likes/', include('likes.urls')),
-    path('dj-rest-auth/', include('dj_rest_auth.urls')),
-    path('dj-rest-auth/registration/', include('dj_rest_auth.registration.urls')),
-
+    path('api/dj-rest-auth/', include('dj_rest_auth.urls')),
+    path('api/dj-rest-auth/registration/', include('dj_rest_auth.registration.urls')),
+    path('api/csrf/', get_csrf_token),
     # Serve React frontend
     
-    re_path(r'^.*$', FrontendAppView.as_view()),
+    re_path(r'^(?!admin|api).*$', FrontendAppView.as_view()),
 ]

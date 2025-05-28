@@ -17,7 +17,7 @@ const ManageTagsModal = ({ show, onHide, tags, setTags, notes }) => {
     if (!tagInput.trim()) return;
 
     try {
-      const res = await axiosInstance.post('/api/tags/', { name: tagInput }, { headers });
+      const res = await axiosInstance.post('/tags/', { name: tagInput }, { headers });
       setTags(prev => [...prev, res.data]);
       setTagInput('');
     } catch (err) {
@@ -33,7 +33,7 @@ const ManageTagsModal = ({ show, onHide, tags, setTags, notes }) => {
     }
 
     try {
-      await axiosInstance.delete(`/api/tags/${tagId}/`, { headers });
+      await axiosInstance.delete(`/tags/${tagId}/`, { headers });
       setTags(prev => prev.filter(tag => tag.id !== tagId));
     } catch (err) {
       console.error('Failed to delete tag:', err.response?.data || err.message);
@@ -47,7 +47,7 @@ const ManageTagsModal = ({ show, onHide, tags, setTags, notes }) => {
 
   const handleSaveEdit = async () => {
     try {
-      await axiosInstance.put(`/api/tags/${editTagId}/`, { name: editTagName }, { headers });
+      await axiosInstance.put(`/tags/${editTagId}/`, { name: editTagName }, { headers });
       setTags(prev => prev.map(tag => tag.id === editTagId ? { ...tag, name: editTagName } : tag));
       setEditTagId(null);
       setEditTagName('');

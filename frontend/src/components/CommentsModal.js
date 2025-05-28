@@ -16,7 +16,7 @@ const CommentsModal = ({ note, show, onHide }) => {
       try {
         const token = localStorage.getItem('authToken');
         const headers = { Authorization: `Token ${token}` };
-        const res = await axiosInstance.get(`/api/notes/${note.id}/comments/`, { headers });
+        const res = await axiosInstance.get(`/comments/note/${note.id}/`, { headers });
         setComments(res.data);
       } catch (err) {
         console.error('Error fetching comments:', err);
@@ -30,9 +30,9 @@ const CommentsModal = ({ note, show, onHide }) => {
     try {
       const token = localStorage.getItem('authToken');
       const headers = { Authorization: `Token ${token}` };
-      await axiosInstance.post(`/api/notes/${note.id}/comments/`, { content: newComment }, { headers });
+      await axiosInstance.post(`/comments/note/${note.id}/`, { content: newComment }, { headers });
       setNewComment('');
-      const res = await axiosInstance.get(`/api/notes/${note.id}/comments/`, { headers });
+      const res = await axiosInstance.get(`/comments/note/${note.id}/`, { headers });
       setComments(res.data);
     } catch (err) {
       console.error('Error adding comment:', err);
@@ -48,8 +48,8 @@ const CommentsModal = ({ note, show, onHide }) => {
     try {
       const token = localStorage.getItem('authToken');
       const headers = { Authorization: `Token ${token}` };
-      await axiosInstance.put(`/api/comments/${editingCommentId}/`, { content: editedCommentContent }, { headers });
-      const res = await axiosInstance.get(`/api/notes/${note.id}/comments/`, { headers });
+      await axiosInstance.put(`/comments/${editingCommentId}/`, { content: editedCommentContent }, { headers });
+      const res = await axiosInstance.get(`/comments/note/${note.id}/`, { headers });
       setComments(res.data);
       setEditingCommentId(null);
       setEditedCommentContent('');
@@ -62,8 +62,8 @@ const CommentsModal = ({ note, show, onHide }) => {
     try {
       const token = localStorage.getItem('authToken');
       const headers = { Authorization: `Token ${token}` };
-      await axiosInstance.delete(`/api/comments/${commentId}/`, { headers });
-      const res = await axiosInstance.get(`/api/notes/${note.id}/comments/`, { headers });
+      await axiosInstance.delete(`/comments/${commentId}/`, { headers });
+      const res = await axiosInstance.get(`/comments/note/${note.id}/`, { headers });
       setComments(res.data);
     } catch (err) {
       console.error('Error deleting comment:', err);

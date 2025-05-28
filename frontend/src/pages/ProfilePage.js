@@ -32,14 +32,14 @@ const ProfilePage = () => {
         const token = localStorage.getItem('authToken');
         const headers = { Authorization: `Token ${token}` };
         const response = username
-          ? await axiosInstance.get(`/api/profiles/username/${username}/`, { headers })  // ✅ updated endpoint
-          : await axiosInstance.get('/api/profiles/me/', { headers });
+          ? await axiosInstance.get(`/profiles/username/${username}/`, { headers })  // ✅ updated endpoint
+          : await axiosInstance.get('/profiles/me/', { headers });
 
         setProfile(response.data);
         setEditForm({ bio: response.data.bio || '', image: '' });
         setImagePreview(null);
-        //console.log('Raw profile.image:', response.data.image);
-        //console.log('Final image URL:', getFullImageUrl(response.data.image));
+        console.log('Raw profile.image:', response.data.image);
+        console.log('Final image URL:', getFullImageUrl(response.data.image));
 
       } catch (err) {
         console.error(err);
@@ -81,10 +81,10 @@ const ProfilePage = () => {
     }
 
     try {
-      await axiosInstance.put('/api/profiles/me/', formData, { headers });
+      await axiosInstance.put('/profiles/me/', formData, { headers });
       setToast({ type: 'success', message: 'Profile updated successfully!' });
       setShowEditModal(false);
-      const res = await axiosInstance.get('/api/profiles/me/', { headers });
+      const res = await axiosInstance.get('/profiles/me/', { headers });
       setProfile(res.data);
     } catch (err) {
       console.error('❌ Failed to update profile:', err);
@@ -103,7 +103,7 @@ const ProfilePage = () => {
 
       await axiosInstance({
         method: method,
-        url: `/api/follows/${profile.username}/`,
+        url: `/follows/${profile.username}/`,
         headers: headers,
       });
 
@@ -121,14 +121,22 @@ const ProfilePage = () => {
   };
 
   const getFullImageUrl = (path) => {
-    if (!path) return null;
-    if (path.startsWith('http')) return path;
+  if (!path) return null;
 
-    // ✅ Ensure Cloudinary path is correctly prefixed
-    const cleanedPath = path.replace(/^image\/upload\//, '');
-    return `${CLOUDINARY_BASE_URL}${cleanedPath}`;
+  //  a complete Cloudinary URL
+  if (path.startsWith('http') || path.startsWith('https')) {
+    return path;
+  }
 
+  // Common case: Cloudinary returns relative media path
+  if (path.includes('media/')) {
+    return `${CLOUDINARY_BASE_URL}${path.split('media/')[1]}`;
+  }
+
+  // ✅ Fallback for legacy paths
+  return `${CLOUDINARY_BASE_URL}${path.replace(/^image\/upload\//, '')}`;
 };
+
 
 
 

@@ -17,7 +17,7 @@ const FollowingListModal = ({ username, show, onHide, onUnfollow }) => {
       setLoading(true);
       const token = localStorage.getItem('authToken');
 
-      axiosInstance.get(`/api/follows/${username}/following/`, {
+      axiosInstance.get(`/follows/${username}/following/`, {
         headers: { Authorization: `Token ${token}` },
       })
         .then(response => {
@@ -35,7 +35,7 @@ const FollowingListModal = ({ username, show, onHide, onUnfollow }) => {
   const handleUnfollow = async (targetUsername) => {
     try {
       const token = localStorage.getItem('authToken');
-      await axiosInstance.delete(`/api/follows/${targetUsername}/`, {
+      await axiosInstance.delete(`/follows/${targetUsername}/`, {
         headers: { Authorization: `Token ${token}` },
       });
 

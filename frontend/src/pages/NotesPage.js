@@ -40,8 +40,8 @@ const NotesPage = () => {
       const headers = { Authorization: `Token ${token}` };
       try {
         const [notesRes, tagsRes] = await Promise.all([
-          axiosInstance.get('/api/notes/', { headers }),
-          axiosInstance.get('/api/tags/', { headers }),
+          axiosInstance.get('/notes/', { headers }),
+          axiosInstance.get('/tags/', { headers }),
         ]);
         setNotes(notesRes.data);
         setTags(tagsRes.data);
@@ -78,7 +78,7 @@ const NotesPage = () => {
     try {
       for (const name of newTagNames) {
         try {
-            await axiosInstance.post('/api/tags/', { name }, { headers });
+            await axiosInstance.post('/tags/', { name }, { headers });
         } catch (err) {
             if (err.response?.status !== 400) {
                 throw err; // only ignore "already exists" errors
@@ -88,19 +88,19 @@ const NotesPage = () => {
 
 
       if (editingId) {
-        await axiosInstance.put(`/api/notes/${editingId}/`, { ...formData, tags: tagNames }, { headers });
+        await axiosInstance.put(`/notes/${editingId}/`, { ...formData, tags: tagNames }, { headers });
         setSuccess('Note updated successfully.');
         setShowEditModal(false);
       } else {
-        await axiosInstance.post('/api/notes/', { ...formData, tags: tagNames }, { headers });
+        await axiosInstance.post('/notes/', { ...formData, tags: tagNames }, { headers });
         setSuccess('Note created successfully.');
         setShowAddModal(false);
       }
 
       resetForm();
       const [notesRes, tagsRes] = await Promise.all([
-        axiosInstance.get('/api/notes/', { headers }),
-        axiosInstance.get('/api/tags/', { headers }),
+        axiosInstance.get('/notes/', { headers }),
+        axiosInstance.get('/tags/', { headers }),
       ]);
       setNotes(notesRes.data);
       setTags(tagsRes.data);
@@ -124,9 +124,9 @@ const NotesPage = () => {
     const token = localStorage.getItem('authToken');
     const headers = { Authorization: `Token ${token}` };
     try {
-      await axiosInstance.delete(`/api/notes/${id}/`, { headers });
+      await axiosInstance.delete(`/notes/${id}/`, { headers });
       setSuccess('Note deleted.');
-      const res = await axiosInstance.get('/api/notes/', { headers });
+      const res = await axiosInstance.get('/notes/', { headers });
       setNotes(res.data);
     } catch (err) {
       setError('Error deleting note.');

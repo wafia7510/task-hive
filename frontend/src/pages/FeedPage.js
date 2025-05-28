@@ -33,7 +33,7 @@ const FeedPage = () => {
     const fetchFeedNotes = async () => {
       try {
         const token = localStorage.getItem('authToken');
-        const response = await axiosInstance.get('/api/notes/feed/', {
+        const response = await axiosInstance.get('/notes/feed/', {
           headers: { Authorization: `Token ${token}` },
         });
         setFeedNotes(response.data);
@@ -61,7 +61,7 @@ const FeedPage = () => {
   const handleLikeChange = async () => {
     try {
         const token = localStorage.getItem('authToken');
-        const response = await axiosInstance.get('/api/notes/feed/', {
+        const response = await axiosInstance.get('/notes/feed/', {
         headers: { Authorization: `Token ${token}` },
         });
         setFeedNotes(response.data);

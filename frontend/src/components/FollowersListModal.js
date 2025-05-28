@@ -18,7 +18,7 @@ const FollowersListModal = ({ username, show, onHide, onFollowBack }) => {
       setLoading(true);
       const token = localStorage.getItem('authToken');
 
-      axiosInstance.get(`/api/follows/${username}/followers/`, {
+      axiosInstance.get(`/follows/${username}/followers/`, {
         headers: { Authorization: `Token ${token}` },
       })
         .then(res => {
@@ -36,7 +36,7 @@ const FollowersListModal = ({ username, show, onHide, onFollowBack }) => {
   const handleFollowBack = async (targetUsername) => {
     try {
       const token = localStorage.getItem('authToken');
-      await axiosInstance.post(`/api/follows/${targetUsername}/`, null, {
+      await axiosInstance.post(`/follows/${targetUsername}/`, null, {
         headers: { Authorization: `Token ${token}` },
       });
 

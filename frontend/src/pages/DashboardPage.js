@@ -21,9 +21,9 @@ const DashboardPage = () => {
       try {
         const token = localStorage.getItem('authToken');
         const [tasksRes, notesRes, feedRes] = await Promise.all([
-          axiosInstance.get('/api/tasks/', { headers: { Authorization: `Token ${token}` } }),
-          axiosInstance.get('/api/notes/', { headers: { Authorization: `Token ${token}` } }),
-          axiosInstance.get('/api/notes/feed/', { headers: { Authorization: `Token ${token}` } }),
+          axiosInstance.get('/tasks/', { headers: { Authorization: `Token ${token}` } }),
+          axiosInstance.get('/notes/', { headers: { Authorization: `Token ${token}` } }),
+          axiosInstance.get('/notes/feed/', { headers: { Authorization: `Token ${token}` } }),
         ]);
         setTasks(tasksRes.data);
         setNotes(notesRes.data);

@@ -16,7 +16,7 @@ const LikesButton = ({ noteId, initialLikesCount = 0, onLikeChange }) => {
         const token = localStorage.getItem('authToken');
         const headers = { Authorization: `Token ${token}` };
 
-        const res = await axiosInstance.get(`/api/likes/notes/${noteId}/likes/`, { headers }); // ✅ FIXED
+        const res = await axiosInstance.get(`/likes/notes/${noteId}/likes/`, { headers }); // ✅ FIXED
         const userLiked = res.data.some((like) => like.user === user?.username);
         setLiked(userLiked);
       } catch (err) {
@@ -38,14 +38,14 @@ const LikesButton = ({ noteId, initialLikesCount = 0, onLikeChange }) => {
 
     try {
       if (liked) {
-        const res = await axiosInstance.get(`/api/likes/notes/${noteId}/likes/`, { headers }); // ✅ FIXED
+        const res = await axiosInstance.get(`/likes/notes/${noteId}/likes/`, { headers }); // ✅ FIXED
         const userLike = res.data.find((like) => like.user === user?.username);
         if (userLike) {
-          await axiosInstance.delete(`/api/likes/${userLike.id}/`, { headers });
+          await axiosInstance.delete(`/likes/${userLike.id}/`, { headers });
           setLikesCount((prev) => Math.max(0, prev - 1));
         }
       } else {
-        await axiosInstance.post(`/api/likes/notes/${noteId}/likes/`, {}, { headers }); // ✅ FIXED
+        await axiosInstance.post(`/likes/notes/${noteId}/likes/`, {}, { headers }); // ✅ FIXED
         setLikesCount((prev) => prev + 1);
       }
 

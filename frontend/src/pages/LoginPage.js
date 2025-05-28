@@ -23,15 +23,15 @@ const LoginPage = () => {
     e.preventDefault();
     setError('');
     setSuccess('');
-    try {
-      await login(formData);
+    const result = await login(formData);
+    if (result.success) {
       setSuccess('Login successful!');
       navigate('/dashboard');
-    } catch (err) {
-      console.error(err);
-      setError('Invalid credentials. Please try again.');
+    } else {
+      setError(result.message || 'Invalid credentials. Please try again.');
     }
-  };
+};
+
 
   return (
     <>

@@ -23,7 +23,7 @@ const ExploreProfilesPage = () => {
         const token = localStorage.getItem('authToken');
         const headers = { Authorization: `Token ${token}` };
 
-        const res = await axiosInstance.get('/api/profiles/', { headers });
+        const res = await axiosInstance.get('/profiles/', { headers });
         setProfiles(res.data);
       } catch (error) {
         console.error('Explore fetch failed:', error.response?.data || error.message);

@@ -148,7 +148,9 @@ cloudinary.config(
 
 # CORS & CSRF SETTINGS
 CORS_ALLOWED_ORIGINS = [
-    "https://taskhive12-a2ed93813c61.herokuapp.com",  
+    "https://taskhive12-a2ed93813c61.herokuapp.com",
+    "http://localhost:3000",  # ✅ React dev server
+    "http://127.0.0.1:3000",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -159,6 +161,8 @@ SESSION_COOKIE_SAMESITE = 'Lax'
 
 CSRF_TRUSTED_ORIGINS = [
     'https://taskhive12-a2ed93813c61.herokuapp.com',
+    'http://localhost:3000',
+    "http://127.0.0.1:3000",
 ]
 
 # EMAIL

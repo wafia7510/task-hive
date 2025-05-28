@@ -24,7 +24,7 @@ const TasksPage = () => {
     try {
       const token = localStorage.getItem('authToken');
       const params = { search, priority: filterPriority, status: filterStatus };
-      const response = await axiosInstance.get('/api/tasks/', {
+      const response = await axiosInstance.get('/tasks/', {
         headers: { Authorization: `Token ${token}` },
         params,
       });
@@ -43,12 +43,12 @@ const TasksPage = () => {
     const token = localStorage.getItem('authToken');
     try {
       if (editTaskId) {
-        await axiosInstance.put(`/api/tasks/${editTaskId}/`, form, {
+        await axiosInstance.put(`/tasks/${editTaskId}/`, form, {
           headers: { Authorization: `Token ${token}` },
         });
         setSuccessMsg('Task updated!');
       } else {
-        await axiosInstance.post('/api/tasks/', form, {
+        await axiosInstance.post('/tasks/', form, {
           headers: { Authorization: `Token ${token}` },
         });
         setSuccessMsg('Task created!');
@@ -66,7 +66,7 @@ const TasksPage = () => {
     if (!window.confirm('Are you sure you want to delete this task?')) return;
     try {
       const token = localStorage.getItem('authToken');
-      await axiosInstance.delete(`/api/tasks/${taskId}/`, {
+      await axiosInstance.delete(`/tasks/${taskId}/`, {
         headers: { Authorization: `Token ${token}` },
       });
       setSuccessMsg('Task deleted.');

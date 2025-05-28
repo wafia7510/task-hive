@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
 import { axiosInstance } from '../api/axiosDefaults';
 import PropTypes from 'prop-types';
+
 export const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
@@ -10,16 +11,16 @@ export function AuthProvider({ children }) {
     return storedUser ? JSON.parse(storedUser) : null;
   });
 
-  // ✅ Correct CSRF fetch using a safe GET route
+  // ✅ CSRF setup using safe GET route
   useEffect(() => {
-    axiosInstance.get('/api/notes/')
-      .then(() => console.log("CSRF token set"))
-      .catch((err) => console.warn("CSRF fetch failed:", err));
+    axiosInstance.get('/csrf/')
+      .then(() => console.log("✅ CSRF token fetched successfully"))
+      .catch((err) => console.warn("⚠️ CSRF token fetch failed:", err));
   }, []);
 
+  // ✅ Login handler
   const login = async (formData) => {
     try {
-      console.log("Login CSRF token:", Cookies.get('csrftoken')); // Debug log
       const response = await axiosInstance.post(
         '/dj-rest-auth/login/',
         {
@@ -28,7 +29,7 @@ export function AuthProvider({ children }) {
         },
         {
           headers: {
-            'X-CSRFToken': Cookies.get('csrftoken'), // ✅ Read token dynamically
+            'X-CSRFToken': Cookies.get('csrftoken'),
           },
         }
       );
@@ -50,9 +51,9 @@ export function AuthProvider({ children }) {
     }
   };
 
+  // ✅ Signup handler
   const signup = async (formData) => {
     try {
-      console.log("Signup CSRF token:", Cookies.get('csrftoken')); // Debug log
       const response = await axiosInstance.post(
         '/dj-rest-auth/registration/',
         {
@@ -65,7 +66,7 @@ export function AuthProvider({ children }) {
         },
         {
           headers: {
-            'X-CSRFToken': Cookies.get('csrftoken'), // ✅ Read token dynamically
+            'X-CSRFToken': Cookies.get('csrftoken'),
           },
         }
       );
@@ -80,6 +81,7 @@ export function AuthProvider({ children }) {
     }
   };
 
+  // ✅ Logout
   const logout = () => {
     setUser(null);
     localStorage.removeItem('authToken');
@@ -97,6 +99,7 @@ export function AuthProvider({ children }) {
 export function useAuth() {
   return useContext(AuthContext);
 }
+
 AuthProvider.propTypes = {
   children: PropTypes.node.isRequired,
 };
