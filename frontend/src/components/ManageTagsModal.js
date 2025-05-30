@@ -1,13 +1,15 @@
-
 import React, { useState } from 'react';
 import { Modal, Form, Button, InputGroup } from 'react-bootstrap';
 import { axiosInstance } from '../api/axiosDefaults';
 import PropTypes from 'prop-types';
+
 const ManageTagsModal = ({ show, onHide, tags, setTags, notes }) => {
   const [tagInput, setTagInput] = useState('');
   const [filter, setFilter] = useState('');
   const [editTagId, setEditTagId] = useState(null);
   const [editTagName, setEditTagName] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [submittingEdit, setSubmittingEdit] = useState(false);
 
   const token = localStorage.getItem('authToken');
   const headers = { Authorization: `Token ${token}` };
@@ -16,12 +18,15 @@ const ManageTagsModal = ({ show, onHide, tags, setTags, notes }) => {
     e.preventDefault();
     if (!tagInput.trim()) return;
 
+    setSubmitting(true);
     try {
       const res = await axiosInstance.post('/tags/', { name: tagInput }, { headers });
       setTags(prev => [...prev, res.data]);
       setTagInput('');
     } catch (err) {
       console.error('Failed to add tag:', err.response?.data || err.message);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -31,6 +36,9 @@ const ManageTagsModal = ({ show, onHide, tags, setTags, notes }) => {
       alert('Cannot delete tag that is used in notes.');
       return;
     }
+
+    const confirmDelete = window.confirm(`Are you sure you want to delete the tag "${tagName}"?`);
+    if (!confirmDelete) return;
 
     try {
       await axiosInstance.delete(`/tags/${tagId}/`, { headers });
@@ -46,6 +54,9 @@ const ManageTagsModal = ({ show, onHide, tags, setTags, notes }) => {
   };
 
   const handleSaveEdit = async () => {
+    if (!editTagName.trim()) return;
+
+    setSubmittingEdit(true);
     try {
       await axiosInstance.put(`/tags/${editTagId}/`, { name: editTagName }, { headers });
       setTags(prev => prev.map(tag => tag.id === editTagId ? { ...tag, name: editTagName } : tag));
@@ -53,6 +64,8 @@ const ManageTagsModal = ({ show, onHide, tags, setTags, notes }) => {
       setEditTagName('');
     } catch (err) {
       console.error('Failed to edit tag:', err.response?.data || err.message);
+    } finally {
+      setSubmittingEdit(false);
     }
   };
 
@@ -74,7 +87,16 @@ const ManageTagsModal = ({ show, onHide, tags, setTags, notes }) => {
                 value={tagInput}
                 onChange={(e) => setTagInput(e.target.value)}
               />
-              <Button type="submit" variant="primary">Add</Button>
+              <Button type="submit" variant="primary" disabled={submitting}>
+                {submitting ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    Adding...
+                  </>
+                ) : (
+                  'Add'
+                )}
+              </Button>
             </InputGroup>
           </Form.Group>
         </Form>
@@ -103,7 +125,21 @@ const ManageTagsModal = ({ show, onHide, tags, setTags, notes }) => {
                     onChange={(e) => setEditTagName(e.target.value)}
                     className="me-2"
                   />
-                  <Button size="sm" variant="success" onClick={handleSaveEdit}>Save</Button>
+                  <Button
+                    size="sm"
+                    variant="success"
+                    onClick={handleSaveEdit}
+                    disabled={submittingEdit}
+                  >
+                    {submittingEdit ? (
+                      <>
+                        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        Saving...
+                      </>
+                    ) : (
+                      'Save'
+                    )}
+                  </Button>
                   <Button size="sm" variant="secondary" onClick={() => setEditTagId(null)}>Cancel</Button>
                 </>
               ) : (
@@ -122,6 +158,7 @@ const ManageTagsModal = ({ show, onHide, tags, setTags, notes }) => {
     </Modal>
   );
 };
+
 ManageTagsModal.propTypes = {
   show: PropTypes.bool.isRequired,
   onHide: PropTypes.func.isRequired,
@@ -129,4 +166,5 @@ ManageTagsModal.propTypes = {
   setTags: PropTypes.func.isRequired,
   notes: PropTypes.array.isRequired,
 };
+
 export default ManageTagsModal;

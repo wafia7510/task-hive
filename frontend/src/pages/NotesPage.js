@@ -1,6 +1,8 @@
-
 import React, { useEffect, useState } from 'react';
-import { Container, Row, Col, Form, Button, Card, Alert, Badge, Modal } from 'react-bootstrap';
+import {
+  Container, Row, Col, Form, Button, Card,
+  Alert, Badge, Modal
+} from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { axiosInstance } from '../api/axiosDefaults';
 import NavBar from '../components/NavBar';
@@ -26,8 +28,19 @@ const NotesPage = () => {
   const [error, setError] = useState('');
   const [showCommentModal, setShowCommentModal] = useState(false);
   const [selectedNoteForComment, setSelectedNoteForComment] = useState(null);
-
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (success || error) {
+      const timer = setTimeout(() => {
+        setSuccess('');
+        setError('');
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [success, error]);
 
   useEffect(() => {
     const token = localStorage.getItem('authToken');
@@ -35,9 +48,9 @@ const NotesPage = () => {
       navigate('/login');
       return;
     }
-
     const fetchNotesAndTags = async () => {
       const headers = { Authorization: `Token ${token}` };
+      setLoading(true);
       try {
         const [notesRes, tagsRes] = await Promise.all([
           axiosInstance.get('/notes/', { headers }),
@@ -47,9 +60,10 @@ const NotesPage = () => {
         setTags(tagsRes.data);
       } catch (err) {
         setError('Error fetching notes or tags');
+      } finally {
+        setLoading(false);
       }
     };
-
     fetchNotesAndTags();
   }, [navigate]);
 
@@ -69,6 +83,7 @@ const NotesPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitting(true);
     const token = localStorage.getItem('authToken');
     const headers = { Authorization: `Token ${token}` };
     const tagNames = selectedTags.map(tag => tag.value);
@@ -78,14 +93,11 @@ const NotesPage = () => {
     try {
       for (const name of newTagNames) {
         try {
-            await axiosInstance.post('/tags/', { name }, { headers });
+          await axiosInstance.post('/tags/', { name }, { headers });
         } catch (err) {
-            if (err.response?.status !== 400) {
-                throw err; // only ignore "already exists" errors
-            }
+          if (err.response?.status !== 400) throw err;
         }
-    }
-
+      }
 
       if (editingId) {
         await axiosInstance.put(`/notes/${editingId}/`, { ...formData, tags: tagNames }, { headers });
@@ -106,21 +118,21 @@ const NotesPage = () => {
       setTags(tagsRes.data);
     } catch (err) {
       setError('Error saving note.');
+    } finally {
+      setSubmitting(false);
     }
   };
 
   const handleEdit = (note) => {
-    setFormData({
-      title: note.title,
-      content: note.content,
-      is_public: note.is_public,
-    });
+    setFormData({ title: note.title, content: note.content, is_public: note.is_public });
     setSelectedTags(note.tags.map(tag => ({ value: tag, label: tag })));
     setEditingId(note.id);
     setShowEditModal(true);
   };
 
   const handleDelete = async (id) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this note?");
+    if (!confirmDelete) return;
     const token = localStorage.getItem('authToken');
     const headers = { Authorization: `Token ${token}` };
     try {
@@ -144,6 +156,7 @@ const NotesPage = () => {
     return matchesTitle && matchesTag;
   });
 
+
   return (
     <>
       <NavBar />
@@ -155,90 +168,114 @@ const NotesPage = () => {
         </div>
       </div>
 
-      <Container className="mt-4">
-        {success && <Alert variant="success">{success}</Alert>}
-        {error && <Alert variant="danger">{error}</Alert>}
-
-        <div className="d-flex justify-content-end mb-3 gap-2">
-          <Button variant="info" onClick={() => setShowTagModal(true)}>Manage Tags</Button>
-          <Button onClick={() => { resetForm(); setShowAddModal(true); }}>+ Add Note</Button>
+      {loading ? (
+        <div className="text-center mt-5">
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
         </div>
+      ) : (
+        <Container className="mt-4">
+          {success && <Alert variant="success">{success}</Alert>}
+          {error && <Alert variant="danger">{error}</Alert>}
 
-        <Form.Control
-          type="text"
-          placeholder="Search by title..."
-          className="mb-3"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+          <div className="d-flex justify-content-end mb-3 gap-2">
+            <Button variant="info" onClick={() => setShowTagModal(true)}>Manage Tags</Button>
+            <Button onClick={() => { resetForm(); setShowAddModal(true); }}>+ Add Note</Button>
+          </div>
 
-        <div className="mb-3">
-          {tags.map(tag => (
-            <Badge
-              key={tag.name}
-              bg={filterTag === tag.name ? 'primary' : 'secondary'}
-              onClick={() => setFilterTag(tag.name === filterTag ? null : tag.name)}
-              style={{ cursor: 'pointer', marginRight: '0.4rem' }}
-            >
-              {tag.name}
-            </Badge>
-          ))}
-        </div>
+          <h4 className="mb-3">Search Your Notes</h4>
+          <Form.Control
+            type="text"
+            placeholder="Search by title..."
+            className="mb-4"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
 
-        <Row>
-          {filteredNotes.map(note => (
-            <Col md={6} lg={4} key={note.id} className="mb-4">
-              <Card className={`shadow-sm h-100 ${styles.cardNote}`}>
-                <Card.Body>
-                  <Card.Title>{note.title}</Card.Title>
-                  <Card.Text>{note.content.length > 100 ? note.content.slice(0, 100) + '...' : note.content}</Card.Text>
-                  <div className="mb-2">
-                    {note.tags.map(tag => (
-                      <Badge
-                        key={tag}
-                        bg="info"
-                        className={styles.tagBadge}
-                        onClick={() => setFilterTag(tag)}
-                        style={{ cursor: 'pointer' }}
-                      >
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                  <div className="d-flex justify-content-between gap-2">
-                    <Button size="sm" variant="secondary" onClick={() => handleEdit(note)}>Edit</Button>
-                    <Button size="sm" variant="danger" onClick={() => handleDelete(note.id)}>Delete</Button>
-                    <Button size="sm" variant="info" onClick={() => handleOpenComments(note)}>Comments</Button>
-                    <LikesButton noteId={note.id} initialLikesCount={note.like_count} />
-                  </div>
-                </Card.Body>
-                <Card.Footer className={`d-flex justify-content-between ${styles.cardFooter}`}>
+          <h5 className="mb-2">Filter by Tag</h5>
+          <div className="mb-4">
+            {tags.map(tag => (
+              <Badge
+                key={tag.name}
+                bg={filterTag === tag.name ? 'primary' : 'secondary'}
+                onClick={() => setFilterTag(tag.name === filterTag ? null : tag.name)}
+                style={{ cursor: 'pointer', marginRight: '0.4rem' }}
+              >
+                {tag.name}
+              </Badge>
+            ))}
+          </div>
+
+          <Row>
+            {filteredNotes.map(note => (
+              <Col md={6} lg={4} key={note.id} className="mb-4">
+                <Card className={`shadow-sm h-100 ${styles.cardNote}`}>
+                  <Card.Body className={styles.cardBody}>
+                      <Card.Title>
+                        <strong>Title:</strong> {note.title}{' '}
+                        {note.is_public ? <span title="Public Note">🌍</span> : <span title="Private Note">🔒</span>}
+                      </Card.Title>
+
+                      <div className={styles.cardText}>
+                        <strong>Content:</strong><br />
+                        {note.content}
+                      </div>
+
+                      <div className={styles.tagArea}>
+                        {note.tags.length > 0 ? (
+                          note.tags.map(tag => (
+                            <Badge
+                              key={tag}
+                              bg="info"
+                              className={styles.tagBadge}
+                              onClick={() => setFilterTag(tag)}
+                              style={{ cursor: 'pointer' }}
+                            >
+                              {tag}
+                            </Badge>
+                          ))
+                        ) : (
+                          <span className="text-muted">No tags</span>
+                        )}
+                      </div>
+
+                      <div className={styles.cardActions}>
+                        <Button size="sm" variant="secondary" onClick={() => handleEdit(note)}>Edit</Button>
+                        <Button size="sm" variant="danger" onClick={() => handleDelete(note.id)}>Delete</Button>
+                        <Button size="sm" variant="info" onClick={() => handleOpenComments(note)}>Comments</Button>
+                        <LikesButton noteId={note.id} initialLikesCount={note.like_count} />
+                      </div>
+                  </Card.Body>
+
+                  <Card.Footer className={`d-flex justify-content-between ${styles.cardFooter}`}>
                     <small className="text-muted">
-                        Updated: {new Date(note.updated_at).toLocaleDateString()}
+                      Updated: {new Date(note.updated_at).toLocaleDateString()}
                     </small>
                     <small className="text-muted">
-                        Created: {new Date(note.created_at).toLocaleDateString()}
+                      Created: {new Date(note.created_at).toLocaleDateString()}
                     </small>
-                </Card.Footer>
-              </Card>
-            </Col>
-          ))}
-        </Row>
+                  </Card.Footer>
+                </Card>
+              </Col>
+            ))}
+          </Row>
 
-        <CommentsModal
-          note={selectedNoteForComment}
-          show={showCommentModal}
-          onHide={() => setShowCommentModal(false)}
-        />
+          <CommentsModal
+            note={selectedNoteForComment}
+            show={showCommentModal}
+            onHide={() => setShowCommentModal(false)}
+          />
 
-        <ManageTagsModal
-          show={showTagModal}
-          onHide={() => setShowTagModal(false)}
-          tags={tags}
-          setTags={setTags}
-          notes={notes}
-        />
-      </Container>
+          <ManageTagsModal
+            show={showTagModal}
+            onHide={() => setShowTagModal(false)}
+            tags={tags}
+            setTags={setTags}
+            notes={notes}
+          />
+        </Container>
+      )}
 
       {/* Add Note Modal */}
       <Modal show={showAddModal} onHide={() => setShowAddModal(false)}>
@@ -273,7 +310,17 @@ const NotesPage = () => {
                 onChange={setSelectedTags}
               />
             </Form.Group>
-            <Button type="submit" className="mt-3">Create Note</Button>
+            <Button type="submit" className="mt-3" disabled={submitting}>
+              {submitting ? (
+                <>
+                  <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                  Creating...
+                </>
+              ) : (
+                'Create Note'
+              )}
+            </Button>
+
           </Form>
         </Modal.Body>
       </Modal>
@@ -311,7 +358,17 @@ const NotesPage = () => {
                 onChange={setSelectedTags}
               />
             </Form.Group>
-            <Button type="submit" className="mt-3">Save Changes</Button>
+            <Button type="submit" className="mt-3" disabled={submitting}>
+                {submitting ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    Saving...
+                  </>
+                ) : (
+                  'Save Changes'
+                )}
+            </Button>
+
           </Form>
         </Modal.Body>
       </Modal>

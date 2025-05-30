@@ -1,17 +1,86 @@
 .banner {
-  height: 200px;
+  position: relative;
+  width: 100%;
+  height: 220px;
   background-size: cover;
   background-position: center;
-  position: relative;
-  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bannerOverlay {
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 2rem;
+  text-align: center;
+  color: white;
+  max-width: 90%;
+  border-radius: 1rem;
+}
+
+.bannerTitle {
+  font-size: 2rem;
+  font-weight: bold;
 }
 
 .bannerText {
-  position: absolute;
-  bottom: 20px;
-  left: 40px;
-  color: white;
-  font-size: 2rem;
-  font-weight: 600;
-  text-shadow: 1px 1px 3px black;
+  font-size: 1rem;
+  margin-top: 0.5rem;
+}
+
+.taskCard {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 270px; /* 🔽 Smaller than before (was 400px) */
+  border-radius: 0.75rem;
+  transition: transform 0.2s;
+}
+
+.taskCard:hover {
+  transform: translateY(-3px);
+}
+
+.taskCardBody {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  padding: 1rem;
+}
+
+.descriptionScroll {
+  flex-grow: 1;
+  overflow-y: auto;
+  max-height: 150px; /* 🔽 Reduce scroll area height */
+  padding-right: 4px;
+  white-space: pre-line;
+  line-height: 1.4;
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+}
+
+.descriptionScroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.descriptionScroll::-webkit-scrollbar-thumb {
+  background-color: #bbb;
+  border-radius: 3px;
+}
+
+.buttonRow {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: auto;
+}
+
+.cardFooterRow {
+  margin-top: auto;
+  padding: 0.5rem 1rem;
+  font-size: 0.75rem;
+  background-color: #f8f9fa;
+  border-top: 1px solid #eaeaea;
+  display: flex;
+  justify-content: space-between;
 }

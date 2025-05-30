@@ -1,13 +1,15 @@
-
 import React, { useState, useEffect } from 'react';
 import { Modal, Form, Button } from 'react-bootstrap';
 import { axiosInstance } from '../api/axiosDefaults';
-import PropTypes from 'prop-types'; 
+import PropTypes from 'prop-types';
+
 const CommentsModal = ({ note, show, onHide }) => {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editedCommentContent, setEditedCommentContent] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [submittingEdit, setSubmittingEdit] = useState(false); // ✅ Added for edit spinner
 
   useEffect(() => {
     if (!note || !show) return;
@@ -27,6 +29,7 @@ const CommentsModal = ({ note, show, onHide }) => {
   }, [note, show]);
 
   const handleAddComment = async () => {
+    setSubmitting(true);
     try {
       const token = localStorage.getItem('authToken');
       const headers = { Authorization: `Token ${token}` };
@@ -36,6 +39,8 @@ const CommentsModal = ({ note, show, onHide }) => {
       setComments(res.data);
     } catch (err) {
       console.error('Error adding comment:', err);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -45,6 +50,7 @@ const CommentsModal = ({ note, show, onHide }) => {
   };
 
   const handleSaveCommentEdit = async () => {
+    setSubmittingEdit(true); // ✅ Show edit spinner
     try {
       const token = localStorage.getItem('authToken');
       const headers = { Authorization: `Token ${token}` };
@@ -55,10 +61,15 @@ const CommentsModal = ({ note, show, onHide }) => {
       setEditedCommentContent('');
     } catch (err) {
       console.error('Error editing comment:', err);
+    } finally {
+      setSubmittingEdit(false); // ✅ Stop spinner
     }
   };
 
   const handleDeleteComment = async (commentId) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this comment?");
+    if (!confirmDelete) return;
+
     try {
       const token = localStorage.getItem('authToken');
       const headers = { Authorization: `Token ${token}` };
@@ -72,7 +83,7 @@ const CommentsModal = ({ note, show, onHide }) => {
 
   const canEditComment = (comment) => {
     const username = localStorage.getItem('username');
-    return comment.commenter === username || note.owner === username;
+    return comment.commenter === username;
   };
 
   return (
@@ -95,7 +106,21 @@ const CommentsModal = ({ note, show, onHide }) => {
                   value={editedCommentContent}
                   onChange={(e) => setEditedCommentContent(e.target.value)}
                 />
-                <Button size="sm" className="mt-1 me-2" onClick={handleSaveCommentEdit}>Save</Button>
+                <Button
+                  size="sm"
+                  className="mt-1 me-2"
+                  onClick={handleSaveCommentEdit}
+                  disabled={submittingEdit}
+                >
+                  {submittingEdit ? (
+                    <>
+                      <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                      Saving...
+                    </>
+                  ) : (
+                    'Save'
+                  )}
+                </Button>
                 <Button size="sm" className="mt-1" variant="secondary" onClick={() => setEditingCommentId(null)}>Cancel</Button>
               </>
             ) : (
@@ -120,12 +145,22 @@ const CommentsModal = ({ note, show, onHide }) => {
               onChange={(e) => setNewComment(e.target.value)}
             />
           </Form.Group>
-          <Button type="submit" className="mt-2">Post</Button>
+          <Button type="submit" className="mt-2" disabled={submitting}>
+            {submitting ? (
+              <>
+                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Posting...
+              </>
+            ) : (
+              'Post'
+            )}
+          </Button>
         </Form>
       </Modal.Body>
     </Modal>
   );
 };
+
 CommentsModal.propTypes = {
   note: PropTypes.object.isRequired,
   show: PropTypes.bool.isRequired,
