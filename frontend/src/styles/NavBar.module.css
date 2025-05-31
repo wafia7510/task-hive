@@ -1,24 +1,37 @@
-/* src/styles/NavBar.module.css */
+/* === NavBar.module.css === */
 
+/*  Custom navbar background */
 .navbarCustom {
   background-color: indigo !important;
+  z-index: 1050; /* Ensure it stays on top */
 }
 
+/*  Shared link styling */
 .navLink {
   color: white !important;
   font-weight: 500;
   margin-left: 1rem;
+  transition: all 0.2s ease;
 }
 
+/*  Hover underline effect */
 .navLink:hover {
   text-decoration: underline;
 }
 
+/*  Underline for active route */
+.activeLink {
+  text-decoration: underline !important;
+  font-weight: 600;
+}
+
+/* Logout button spacing */
 .logoutButton {
   margin-left: 1rem;
   font-weight: 500;
 }
 
+/*  Brand styling */
 .brandWhite {
   color: white !important;
   font-weight: bold;

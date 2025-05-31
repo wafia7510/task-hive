@@ -1,5 +1,4 @@
-/* src/styles/FeedPage.module.css */
-
+/* 🖼 Hero image */
 .heroImage {
   max-height: 300px;
   object-fit: cover;
@@ -7,17 +6,53 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
+/* 🔍 Search input */
 .searchInput {
   border-radius: 0.25rem;
 }
 
-.cardBody {
-  min-height: 240px;
+/* 💎 Fixed height for cards */
+.fixedCardHeight {
+  height: 230px; /* Adjust if needed */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
+/* 🧱 Card body structure */
+.cardBody {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+/* 📝 Scrollable content inside card */
+.cardTextScroll {
+  flex-grow: 1;
+  max-height: 100px;
+  overflow-y: auto;
+  font-size: 0.95rem;
+  padding-right: 4px;
+}
+
+.cardTextScroll:hover {
+  overflow-y: auto;
+}
+
+.cardTextScroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.cardTextScroll::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 3px;
+}
+
+/* 🎯 Button section pinned to bottom */
 .cardActions {
+  margin-top: auto;
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-top: 1rem;
+  gap: 10px;
 }

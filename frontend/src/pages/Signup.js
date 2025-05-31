@@ -6,9 +6,10 @@ import NavBar from '../components/NavBar';
 import styles from '../styles/Signup.module.css';
 
 const Signup = () => {
-  const { signup } = useAuth();
-  const navigate = useNavigate();
+  const { signup } = useAuth(); // 🔐 Access signup method from auth context
+  const navigate = useNavigate(); // 🚀 Navigation hook
 
+  // 🧾 Signup form state
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -21,12 +22,12 @@ const Signup = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // 🔄 Update form data
+  // 🔄 Update form field values
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // ✅ Handle signup submit
+  // ✅ Submit registration form
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -39,7 +40,7 @@ const Signup = () => {
       setLoading(true);
       await signup(formData);
       alert("Successfully registered!");
-      navigate('/login');
+      navigate('/login'); // 👉 Redirect to login after successful signup
     } catch (err) {
       console.error("Signup failed:", err.response?.data || err.message);
       setError('Failed to create an account');
@@ -61,12 +62,13 @@ const Signup = () => {
             <Card
               className={`shadow-sm ${styles.card}`}
               style={{ backgroundColor: 'rgba(75, 0, 130, 0.4)' }}
+              aria-label="Signup Card"
             >
               <Card.Body>
                 <h3 className="text-center mb-4 text-white">Sign Up</h3>
 
                 {/* 🔴 Error Message */}
-                {error && <Alert variant="danger">{error}</Alert>}
+                {error && <Alert variant="danger" aria-live="assertive">{error}</Alert>}
 
                 {/* 📝 Registration Form */}
                 <Form onSubmit={handleSubmit} aria-label="Signup Form">
@@ -79,8 +81,10 @@ const Signup = () => {
                           name="firstName"
                           value={formData.firstName}
                           onChange={handleChange}
+                          placeholder="Enter first name"
                           required
                           aria-required="true"
+                          aria-label="First Name"
                         />
                       </Form.Group>
                     </Col>
@@ -92,8 +96,10 @@ const Signup = () => {
                           name="lastName"
                           value={formData.lastName}
                           onChange={handleChange}
+                          placeholder="Enter last name"
                           required
                           aria-required="true"
+                          aria-label="Last Name"
                         />
                       </Form.Group>
                     </Col>
@@ -106,8 +112,10 @@ const Signup = () => {
                       name="email"
                       value={formData.email}
                       onChange={handleChange}
+                      placeholder="Enter email"
                       required
                       aria-required="true"
+                      aria-label="Email"
                     />
                   </Form.Group>
 
@@ -118,8 +126,10 @@ const Signup = () => {
                       name="username"
                       value={formData.username}
                       onChange={handleChange}
+                      placeholder="Choose a username"
                       required
                       aria-required="true"
+                      aria-label="Username"
                     />
                   </Form.Group>
 
@@ -130,8 +140,10 @@ const Signup = () => {
                       name="password"
                       value={formData.password}
                       onChange={handleChange}
+                      placeholder="Enter password"
                       required
                       aria-required="true"
+                      aria-label="Password"
                     />
                   </Form.Group>
 
@@ -142,11 +154,14 @@ const Signup = () => {
                       name="confirmPassword"
                       value={formData.confirmPassword}
                       onChange={handleChange}
+                      placeholder="Re-enter password"
                       required
                       aria-required="true"
+                      aria-label="Confirm Password"
                     />
                   </Form.Group>
 
+                  {/* 🚀 Submit Button */}
                   <Button
                     disabled={loading}
                     variant="primary"
@@ -158,10 +173,10 @@ const Signup = () => {
                   </Button>
                 </Form>
 
-                {/* 🔁 Already have account */}
+                {/* 🔁 Already have an account link */}
                 <div className="mt-3 text-center">
                   <span className="text-white">Already a user? </span>
-                  <Link to="/login" className="text-white text-decoration-underline">
+                  <Link to="/login" className="text-white text-decoration-underline" aria-label="Go to Login Page">
                     Sign In
                   </Link>
                 </div>

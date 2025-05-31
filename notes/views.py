@@ -14,18 +14,24 @@ from follows.models import Follow
 
 class FeedNotesView(APIView):
     """
-    Get public notes from users the current user follows or is followed by.
+    Get public notes from users who are mutual connections (follow each other).
     """
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
         user = request.user
 
+        # Users you follow
         following_ids = Follow.objects.filter(follower=user).values_list('following_id', flat=True)
-        follower_ids = Follow.objects.filter(following=user).values_list('follower_id', flat=True)
-        related_user_ids = set(following_ids).union(set(follower_ids))
 
-        public_notes = Note.objects.filter(owner__id__in=related_user_ids, is_public=True).order_by('-created_at')
+        # Users who follow you
+        follower_ids = Follow.objects.filter(following=user).values_list('follower_id', flat=True)
+
+        # Mutual followers: intersection of both sets
+        mutual_ids = set(following_ids).intersection(set(follower_ids))
+
+        # Get only public notes from mutual connections
+        public_notes = Note.objects.filter(owner__id__in=mutual_ids, is_public=True).order_by('-created_at')
 
         serializer = NoteSerializer(public_notes, many=True, context={'request': request})
         return Response(serializer.data)

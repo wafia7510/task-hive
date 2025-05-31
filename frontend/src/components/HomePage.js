@@ -2,13 +2,27 @@ import React from 'react';
 import { Container, Row, Col, Button, Card } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTasks, faStickyNote, faUserFriends, faCommentDots } from '@fortawesome/free-solid-svg-icons';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import NavBar from './NavBar';
 import styles from '../styles/HomePage.module.css';
 
 const HomePage = () => {
+  const navigate = useNavigate(); //  for programmatic navigation
+  const { user } = useAuth();     //  check if user is logged in
+
+  //  Handle card clicks with login check
+  const handleCardClick = (link) => {
+    if (user) {
+      navigate(link);
+    } else {
+      navigate('/register');
+    }
+  };
+
   return (
     <>
-      {/* Top Navigation Bar */}
+      {/*  Navigation */}
       <NavBar />
 
       {/* 🟨 Hero Section */}
@@ -22,7 +36,6 @@ const HomePage = () => {
             <Button variant="primary" href="/register">Join Us</Button>
           </Col>
 
-          {/* 🔗 Hero image with Cloudinary */}
           <Col md={6}>
             <img
               src="https://res.cloudinary.com/dotdnopux/image/upload/v1747318759/MyHero_qzvy3k.jpg"
@@ -65,28 +78,34 @@ const HomePage = () => {
               },
             ].map((item, idx) => (
               <Col md={3} sm={6} xs={12} key={idx} className="mb-4">
-                {/* 🔗 Entire card is a link to the section */}
-                <a href={item.link} className="text-decoration-none text-dark">
-                  <Card className={`${styles.cardBox} shadow-sm h-100`}>
-                    <Card.Body>
+                {/* 🔗 Clickable Card */}
+                <div
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => handleCardClick(item.link)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleCardClick(item.link)}
+                  className="text-decoration-none text-dark"
+                >
+                  <Card className={`${styles.cardBox} shadow-sm`}>
+                    <Card.Body className="d-flex flex-column justify-content-center align-items-center text-center">
                       <FontAwesomeIcon icon={item.icon} size="2x" className="mb-3" />
                       <h5><strong>{item.title}</strong></h5>
-                      <p className="text-muted">{item.desc}</p>
+                      <p className={styles.cardDescription}>{item.desc}</p>
                     </Card.Body>
                   </Card>
-                </a>
+                </div>
               </Col>
             ))}
           </Row>
         </Container>
       </section>
 
-      {/* 🟪 Call to Action Section */}
+      {/* 🟪 Call to Action */}
       <section
         className="text-white text-center py-5"
         style={{
           backgroundColor: 'transparent',
-          boxShadow: '0 0 20px rgba(75, 0, 130, 0.5)' // Indigo shadow
+          boxShadow: '0 0 20px rgba(75, 0, 130, 0.5)',
         }}
       >
         <Container>

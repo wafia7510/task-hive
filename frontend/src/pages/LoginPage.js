@@ -7,57 +7,61 @@ import NavBar from '../components/NavBar';
 import styles from '../styles/LoginPage.module.css';
 
 const LoginPage = () => {
+  // 🔐 Form state: username & password
   const [formData, setFormData] = useState({ username: '', password: '' });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const { login } = useAuth();
+  const { login } = useAuth(); // Get login function from auth context
   const navigate = useNavigate();
 
-  // 🔄 Input change handler
+  // 🔄 Update form state on input change
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // 🔐 Submit login credentials
+  // 🧾 Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setSuccess('');
-    const result = await login(formData);
+    const result = await login(formData); // Call login API
     if (result.success) {
       setSuccess('Login successful!');
-      navigate('/dashboard');
+      navigate('/dashboard'); // Redirect to dashboard
     } else {
       setError(result.message || 'Invalid credentials. Please try again.');
     }
-};
-
+  };
 
   return (
     <>
       {/* 🔝 Navigation bar */}
       <NavBar />
 
-      {/* 🧾 Login Form Container */}
-      <Container className="py-5">
+      {/* 📦 Login Form Container */}
+      <Container className="py-5" role="main" aria-labelledby="login-heading">
         <Row className="justify-content-center">
           <Col md={6}>
-            {/* 💠 Transparent indigo card */}
+            {/* 🟣 Transparent login card */}
             <Card
               className={`shadow-sm ${styles.loginCard}`}
               style={{ backgroundColor: 'rgba(75, 0, 130, 0.4)' }}
+              aria-label="Login card"
             >
               <Card.Body>
-                <h2 className="mb-4 text-center text-white">
-                  <FaSignInAlt className="me-2" />
+                {/* 🔑 Heading */}
+                <h2 id="login-heading" className="mb-4 text-center text-white">
+                  <FaSignInAlt className="me-2" aria-hidden="true" />
                   Login to TaskHive
                 </h2>
 
-                {error && <Alert variant="danger">{error}</Alert>}
-                {success && <Alert variant="success">{success}</Alert>}
+                {/* 🚫 Error or ✅ Success alerts */}
+                {error && <Alert variant="danger" role="alert">{error}</Alert>}
+                {success && <Alert variant="success" role="alert">{success}</Alert>}
 
                 {/* 📝 Login Form */}
-                <Form onSubmit={handleSubmit} aria-label="Login Form">
+                <Form onSubmit={handleSubmit} aria-label="Login form">
+                  {/* Username Field */}
                   <Form.Group controlId="username" className="mb-3">
                     <Form.Label className="text-white">Username</Form.Label>
                     <Form.Control
@@ -68,9 +72,11 @@ const LoginPage = () => {
                       placeholder="Enter your username"
                       required
                       aria-required="true"
+                      aria-label="Username"
                     />
                   </Form.Group>
 
+                  {/* Password Field */}
                   <Form.Group controlId="password" className="mb-4">
                     <Form.Label className="text-white">Password</Form.Label>
                     <Form.Control
@@ -81,18 +87,29 @@ const LoginPage = () => {
                       placeholder="Enter your password"
                       required
                       aria-required="true"
+                      aria-label="Password"
                     />
                   </Form.Group>
 
-                  <Button variant="light" type="submit" className="w-100 fw-semibold">
+                  {/* 🔘 Login Button */}
+                  <Button
+                    variant="light"
+                    type="submit"
+                    className="w-100 fw-semibold"
+                    aria-label="Submit login form"
+                  >
                     Login
                   </Button>
                 </Form>
 
-                {/* 👤 Register link */}
+                {/* 👤 Register Link */}
                 <div className="mt-3 text-center">
-                  <span className="text-white">Don&apos;t have an account?</span>
-                  <Link to="/register" className="text-white text-decoration-underline">
+                  <span className="text-white">Don&apos;t have an account? </span>
+                  <Link
+                    to="/register"
+                    className="text-white text-decoration-underline"
+                    aria-label="Go to registration page"
+                  >
                     Create Account
                   </Link>
                 </div>

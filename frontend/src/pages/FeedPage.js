@@ -1,5 +1,3 @@
-// src/pages/FeedPage.js
-
 import React, { useEffect, useState } from 'react';
 import {
   Container,
@@ -17,18 +15,19 @@ import NavBar from '../components/NavBar';
 import { FaUsers, FaSearch } from 'react-icons/fa';
 import CommentsModal from '../components/CommentsModal';
 import LikesButton from '../components/LikesButton';
-import styles from '../styles/FeedPage.module.css'; // ✅ Import styles
+import styles from '../styles/FeedPage.module.css';
 import feedHeroImage from '../assets/feed.png';
-const FeedPage = () => {
-  const [feedNotes, setFeedNotes] = useState([]);
-  const [filteredNotes, setFilteredNotes] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedNote, setSelectedNote] = useState(null);
-  const [showCommentsModal, setShowCommentsModal] = useState(false);
 
-  // Fetch public notes from followed users
+const FeedPage = () => {
+  const [feedNotes, setFeedNotes] = useState([]);              // All notes from followed users
+  const [filteredNotes, setFilteredNotes] = useState([]);      // Notes after search filtering
+  const [loading, setLoading] = useState(true);                // Loading state
+  const [error, setError] = useState('');                      // Error message
+  const [searchTerm, setSearchTerm] = useState('');            // User's search input
+  const [selectedNote, setSelectedNote] = useState(null);      // Note selected for comment modal
+  const [showCommentsModal, setShowCommentsModal] = useState(false); // Modal visibility
+
+  // ✅ Fetch public notes from followed users on load
   useEffect(() => {
     const fetchFeedNotes = async () => {
       try {
@@ -48,7 +47,7 @@ const FeedPage = () => {
     fetchFeedNotes();
   }, []);
 
-  // Filter notes by search term
+  // ✅ Filter notes by search keyword
   useEffect(() => {
     const filtered = feedNotes.filter((note) =>
       note.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -57,41 +56,42 @@ const FeedPage = () => {
     setFilteredNotes(filtered);
   }, [searchTerm, feedNotes]);
 
-  // Handle updating like count locally
+  // ✅ Refresh feed after like toggle
   const handleLikeChange = async () => {
     try {
-        const token = localStorage.getItem('authToken');
-        const response = await axiosInstance.get('/notes/feed/', {
+      const token = localStorage.getItem('authToken');
+      const response = await axiosInstance.get('/notes/feed/', {
         headers: { Authorization: `Token ${token}` },
-        });
-        setFeedNotes(response.data);
-        setFilteredNotes(response.data);
+      });
+      setFeedNotes(response.data);
+      setFilteredNotes(response.data);
     } catch (err) {
-        console.error('Failed to refresh likes:', err);
+      console.error('Failed to refresh likes:', err);
     }
-};
-
+  };
 
   return (
     <>
       <NavBar />
-      <Container className="mt-4">
-        <h3 className="mb-4">
-          <FaUsers aria-label="Feed Icon" /> Feed – Notes from Your Network
+
+      <Container className="mt-4" role="main" aria-labelledby="feed-heading">
+        {/* 🔹 Page Title */}
+        <h3 id="feed-heading" className="mb-4">
+          <FaUsers aria-hidden="true" /> Feed – Notes from Your Network
         </h3>
 
-        {/* Hero Image */}
+        {/* 🔹 Hero Banner */}
         <div className="text-center mb-4">
           <img
-                src={feedHeroImage}
-                alt="TaskHive Feed Hero"
-                className={`img-fluid ${styles.heroImage}`}
+            src={feedHeroImage}
+            alt="TaskHive Feed Hero Banner"
+            className={`img-fluid ${styles.heroImage}`}
           />
         </div>
 
-        {/* Search Bar */}
-        <InputGroup className="mb-4">
-          <InputGroup.Text aria-label="Search Icon">
+        {/* 🔹 Search Notes */}
+        <InputGroup className="mb-4" aria-label="Search notes input group">
+          <InputGroup.Text aria-hidden="true">
             <FaSearch />
           </InputGroup.Text>
           <Form.Control
@@ -103,37 +103,41 @@ const FeedPage = () => {
           />
         </InputGroup>
 
-        {/* Feed Notes */}
+        {/* 🔹 Loading Spinner */}
         {loading && (
-          <div className="text-center mt-5">
-            <Spinner animation="border" aria-label="Loading feed" />
+          <div className="text-center mt-5" role="status" aria-live="polite">
+            <Spinner animation="border" aria-label="Loading feed notes..." />
           </div>
         )}
 
+        {/* 🔹 Error Message */}
         {error && (
-          <Alert variant="danger" className="text-center">
+          <Alert variant="danger" className="text-center" role="alert">
             {error}
           </Alert>
         )}
 
+        {/* 🔹 Notes Grid */}
         {!loading && !error && (
           <Row>
+            {/* ❌ No notes */}
             {filteredNotes.length === 0 ? (
               <Col>
-                <p className="text-muted">No public notes from your network yet.</p>
+                <p className="text-muted" role="status">No public notes from your network yet.</p>
               </Col>
             ) : (
               filteredNotes.map((note) => (
                 <Col md={4} key={note.id}>
-                  <Card className="mb-3 shadow-sm">
+                  {/* ✅ Individual Note Card */}
+                  <Card className={`mb-3 shadow-sm ${styles.fixedCardHeight}`} aria-label={`Note card: ${note.title}`}>
                     <Card.Body className={styles.cardBody}>
                       <Card.Title>{note.title}</Card.Title>
-                      <Card.Subtitle className="mb-2 text-muted">
-                        by {note.owner}
-                      </Card.Subtitle>
-                      <Card.Text>{note.content.slice(0, 100)}...</Card.Text>
+                      <Card.Subtitle className="mb-2 text-muted">by {note.owner}</Card.Subtitle>
+                      <Card.Text className={styles.cardTextScroll}>
+                        {note.content.slice(0, 100)}...
+                      </Card.Text>
 
-                      {/* Like & Comment Buttons */}
+                      {/* ✅ Comment & Like Actions */}
                       <div className={styles.cardActions}>
                         <Button
                           size="sm"
@@ -142,16 +146,16 @@ const FeedPage = () => {
                             setSelectedNote(note);
                             setShowCommentsModal(true);
                           }}
-                          aria-label={`Comment on ${note.title}`}
+                          aria-label={`Open comments for ${note.title}`}
                         >
                           Comment
                         </Button>
-                        <LikesButton
-                            noteId={note.id}
-                            initialLikesCount={note.like_count || 0}
-                            onLikeChange={handleLikeChange}
-                        />
 
+                        <LikesButton
+                          noteId={note.id}
+                          initialLikesCount={note.like_count || 0}
+                          onLikeChange={handleLikeChange}
+                        />
                       </div>
                     </Card.Body>
                   </Card>
@@ -162,7 +166,7 @@ const FeedPage = () => {
         )}
       </Container>
 
-      {/* Comments Modal */}
+      {/* 🔹 Comments Modal */}
       {selectedNote && (
         <CommentsModal
           note={selectedNote}

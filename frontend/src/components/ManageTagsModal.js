@@ -4,16 +4,18 @@ import { axiosInstance } from '../api/axiosDefaults';
 import PropTypes from 'prop-types';
 
 const ManageTagsModal = ({ show, onHide, tags, setTags, notes }) => {
-  const [tagInput, setTagInput] = useState('');
-  const [filter, setFilter] = useState('');
-  const [editTagId, setEditTagId] = useState(null);
-  const [editTagName, setEditTagName] = useState('');
-  const [submitting, setSubmitting] = useState(false);
-  const [submittingEdit, setSubmittingEdit] = useState(false);
+  // States for tag management
+  const [tagInput, setTagInput] = useState(''); // New tag input
+  const [filter, setFilter] = useState(''); // Filter/search input
+  const [editTagId, setEditTagId] = useState(null); // ID of tag being edited
+  const [editTagName, setEditTagName] = useState(''); // Edited tag name
+  const [submitting, setSubmitting] = useState(false); // Submission state for adding
+  const [submittingEdit, setSubmittingEdit] = useState(false); // Submission state for editing
 
   const token = localStorage.getItem('authToken');
   const headers = { Authorization: `Token ${token}` };
 
+  // Add a new tag
   const handleAddTag = async (e) => {
     e.preventDefault();
     if (!tagInput.trim()) return;
@@ -30,6 +32,7 @@ const ManageTagsModal = ({ show, onHide, tags, setTags, notes }) => {
     }
   };
 
+  // Delete a tag (only if not used in any note)
   const handleDeleteTag = async (tagId, tagName) => {
     const tagInUse = notes.some(note => note.tags.includes(tagName));
     if (tagInUse) {
@@ -48,11 +51,13 @@ const ManageTagsModal = ({ show, onHide, tags, setTags, notes }) => {
     }
   };
 
+  // Start editing a tag
   const handleEditTag = (tag) => {
     setEditTagId(tag.id);
     setEditTagName(tag.name);
   };
 
+  // Save edited tag name
   const handleSaveEdit = async () => {
     if (!editTagName.trim()) return;
 
@@ -69,14 +74,21 @@ const ManageTagsModal = ({ show, onHide, tags, setTags, notes }) => {
     }
   };
 
-  const filteredTags = tags.filter(tag => tag.name.toLowerCase().includes(filter.toLowerCase()));
+  // Filter tags by user input
+  const filteredTags = tags.filter(tag =>
+    tag.name.toLowerCase().includes(filter.toLowerCase())
+  );
 
   return (
     <Modal show={show} onHide={onHide}>
+      {/* Modal Header */}
       <Modal.Header closeButton>
         <Modal.Title>Manage Tags</Modal.Title>
       </Modal.Header>
+
+      {/* Modal Body */}
       <Modal.Body>
+        {/* Add New Tag */}
         <Form onSubmit={handleAddTag}>
           <Form.Group>
             <Form.Label>Add New Tag</Form.Label>
@@ -90,7 +102,11 @@ const ManageTagsModal = ({ show, onHide, tags, setTags, notes }) => {
               <Button type="submit" variant="primary" disabled={submitting}>
                 {submitting ? (
                   <>
-                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    <span
+                      className="spinner-border spinner-border-sm me-2"
+                      role="status"
+                      aria-hidden="true"
+                    ></span>
                     Adding...
                   </>
                 ) : (
@@ -103,6 +119,7 @@ const ManageTagsModal = ({ show, onHide, tags, setTags, notes }) => {
 
         <hr />
 
+        {/* Filter/Search Tags */}
         <Form.Group className="mb-3">
           <Form.Label>Filter Tags</Form.Label>
           <Form.Control
@@ -113,12 +130,17 @@ const ManageTagsModal = ({ show, onHide, tags, setTags, notes }) => {
           />
         </Form.Group>
 
+        {/* Display filtered tags */}
         {filteredTags.length === 0 ? (
           <p>No tags found.</p>
         ) : (
           filteredTags.map(tag => (
-            <div key={tag.id} className="d-flex justify-content-between align-items-center mb-2">
+            <div
+              key={tag.id}
+              className="d-flex justify-content-between align-items-center mb-2"
+            >
               {editTagId === tag.id ? (
+                // Edit Mode UI
                 <>
                   <Form.Control
                     value={editTagName}
@@ -133,21 +155,44 @@ const ManageTagsModal = ({ show, onHide, tags, setTags, notes }) => {
                   >
                     {submittingEdit ? (
                       <>
-                        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        <span
+                          className="spinner-border spinner-border-sm me-2"
+                          role="status"
+                          aria-hidden="true"
+                        ></span>
                         Saving...
                       </>
                     ) : (
                       'Save'
                     )}
                   </Button>
-                  <Button size="sm" variant="secondary" onClick={() => setEditTagId(null)}>Cancel</Button>
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    onClick={() => setEditTagId(null)}
+                  >
+                    Cancel
+                  </Button>
                 </>
               ) : (
+                // Normal display with Edit/Delete buttons
                 <>
                   <span>{tag.name}</span>
                   <div className="d-flex gap-2">
-                    <Button size="sm" variant="outline-secondary" onClick={() => handleEditTag(tag)}>Edit</Button>
-                    <Button size="sm" variant="danger" onClick={() => handleDeleteTag(tag.id, tag.name)}>Delete</Button>
+                    <Button
+                      size="sm"
+                      variant="outline-secondary"
+                      onClick={() => handleEditTag(tag)}
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="danger"
+                      onClick={() => handleDeleteTag(tag.id, tag.name)}
+                    >
+                      Delete
+                    </Button>
                   </div>
                 </>
               )}
@@ -159,12 +204,13 @@ const ManageTagsModal = ({ show, onHide, tags, setTags, notes }) => {
   );
 };
 
+// Props validation
 ManageTagsModal.propTypes = {
-  show: PropTypes.bool.isRequired,
-  onHide: PropTypes.func.isRequired,
-  tags: PropTypes.array.isRequired,
-  setTags: PropTypes.func.isRequired,
-  notes: PropTypes.array.isRequired,
+  show: PropTypes.bool.isRequired,      // Modal visibility
+  onHide: PropTypes.func.isRequired,    // Function to close modal
+  tags: PropTypes.array.isRequired,     // Current list of tags
+  setTags: PropTypes.func.isRequired,   // Setter to update tag list
+  notes: PropTypes.array.isRequired,    // Notes (used to prevent deleting in-use tags)
 };
 
 export default ManageTagsModal;

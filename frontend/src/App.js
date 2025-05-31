@@ -1,5 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
+// 📦 Page and Component Imports
 import HomePage from './components/HomePage';
 import Register from './pages/Signup';
 import LoginPage from './pages/LoginPage';
@@ -11,17 +13,20 @@ import ProfilePage from './pages/ProfilePage';
 import ExploreProfilesPage from './pages/ExploreProfilesPage';
 import Footer from './components/Footer';
 import FeedPage from './pages/FeedPage';
+
 function App() {
   return (
+    // 🌐 Wrap entire app in Router for routing
     <Router>
-      <div className="d-flex flex-column min-vh-100">
-        <div className="flex-grow-1">
+      <div className="d-flex flex-column min-vh-100" aria-label="Main App Layout">
+        <div className="flex-grow-1" aria-label="Page Content Container">
           <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/login" element={<LoginPage />} />
+            {/* 🔓 Public Routes */}
+            <Route path="/" element={<HomePage />} aria-label="Home Page Route" />
+            <Route path="/register" element={<Register />} aria-label="Signup Page Route" />
+            <Route path="/login" element={<LoginPage />} aria-label="Login Page Route" />
 
-            {/* 🔒 Protected Routes */}
+            {/* 🔒 Protected Routes - Accessible only when logged in */}
             <Route
               path="/dashboard"
               element={
@@ -29,6 +34,7 @@ function App() {
                   <DashboardPage />
                 </PrivateRoute>
               }
+              aria-label="Dashboard Page Route"
             />
             <Route
               path="/profiles/:username"
@@ -37,6 +43,7 @@ function App() {
                   <ProfilePage />
                 </PrivateRoute>
               }
+              aria-label="User Profile Page Route"
             />
             <Route
               path="/profile"
@@ -45,6 +52,7 @@ function App() {
                   <ProfilePage />
                 </PrivateRoute>
               }
+              aria-label="Own Profile Page Route"
             />
             <Route
               path="/tasks"
@@ -53,6 +61,7 @@ function App() {
                   <TasksPage />
                 </PrivateRoute>
               }
+              aria-label="Tasks Page Route"
             />
             <Route
               path="/notes"
@@ -61,6 +70,7 @@ function App() {
                   <NotesPage />
                 </PrivateRoute>
               }
+              aria-label="Notes Page Route"
             />
             <Route
               path="/explore"
@@ -69,6 +79,7 @@ function App() {
                   <ExploreProfilesPage />
                 </PrivateRoute>
               }
+              aria-label="Explore Profiles Page Route"
             />
             <Route
               path="/feed"
@@ -77,10 +88,13 @@ function App() {
                   <FeedPage />
                 </PrivateRoute>
               }
+              aria-label="Feed Page Route"
             />
           </Routes>
         </div>
-        <Footer />
+
+        {/* 🔻 Global Footer always shown */}
+        <Footer aria-label="Global Footer" />
       </div>
     </Router>
   );
