@@ -23,18 +23,24 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import HomePage from '../components/HomePage';
 import { BrowserRouter as Router } from 'react-router-dom';
+import { AuthContext } from '../contexts/AuthContext'; // ✅ Import context
 
 describe('HomePage', () => {
   test('renders hero heading and mocked navbar', () => {
+    const mockUser = { username: 'testuser' }; // ✅ mock user object
+
     render(
       <Router>
-        <HomePage />
+        <AuthContext.Provider value={{ user: mockUser }}>
+          <HomePage />
+        </AuthContext.Provider>
       </Router>
     );
 
     expect(
       screen.getByText(/organize your study life with ease/i)
     ).toBeInTheDocument();
+
     expect(screen.getByTestId('navbar')).toBeInTheDocument();
   });
 });

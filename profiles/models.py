@@ -8,7 +8,7 @@ from django.dispatch import receiver
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     bio = models.TextField(blank=True)
-    image = CloudinaryField('image', blank=True, null=True)
+    image = CloudinaryField('image', blank=True, null=True, default='media/images/default_profile_avbbjz')
     created_at = models.DateTimeField(auto_now_add=True)  # Automatically set on create
     updated_at = models.DateTimeField(auto_now=True)      # Automatically updated on save
 
