@@ -291,6 +291,7 @@ const NotesPage = () => {
             tags={tags}
             setTags={setTags}
             notes={notes}
+            setNotes={setNotes} // PASS THIS PROP
           />
         </Container>
       )}

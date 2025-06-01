@@ -8,10 +8,10 @@ import NavBar from './NavBar';
 import styles from '../styles/HomePage.module.css';
 
 const HomePage = () => {
-  const navigate = useNavigate(); //  for programmatic navigation
-  const { user } = useAuth();     //  check if user is logged in
+  const navigate = useNavigate();
+  const { user } = useAuth();
 
-  //  Handle card clicks with login check
+  // 🔗 Reusable card click handler with auth check
   const handleCardClick = (link) => {
     if (user) {
       navigate(link);
@@ -20,9 +20,18 @@ const HomePage = () => {
     }
   };
 
+  // 🟦 Handle hero/CTA buttons
+  const handleMainButtonClick = () => {
+    if (user) {
+      navigate('/dashboard');
+    } else {
+      navigate('/register');
+    }
+  };
+
   return (
     <>
-      {/*  Navigation */}
+      {/* 🔝 Top Navigation */}
       <NavBar />
 
       {/* 🟨 Hero Section */}
@@ -33,9 +42,8 @@ const HomePage = () => {
             <p className="text-muted">
               TaskHive helps you stay on top of assignments, collaborate with peers, and take meaningful notes — all in one place.
             </p>
-            <Button variant="primary" href="/register">Join Us</Button>
+            <Button variant="primary" onClick={handleMainButtonClick}>Join Us</Button>
           </Col>
-
           <Col md={6}>
             <img
               src="https://res.cloudinary.com/dotdnopux/image/upload/v1747318759/MyHero_qzvy3k.jpg"
@@ -78,7 +86,6 @@ const HomePage = () => {
               },
             ].map((item, idx) => (
               <Col md={3} sm={6} xs={12} key={idx} className="mb-4">
-                {/* 🔗 Clickable Card */}
                 <div
                   role="button"
                   tabIndex={0}
@@ -115,7 +122,7 @@ const HomePage = () => {
           <p className="mb-4" style={{ color: 'black' }}>
             Join TaskHive today and take control of your tasks, notes, and learning journey.
           </p>
-          <Button href="/register" className="btn-indigo-filled me-3">Get Started</Button>
+          <Button onClick={handleMainButtonClick} className="btn-indigo-filled me-3">Get Started</Button>
         </Container>
       </section>
     </>

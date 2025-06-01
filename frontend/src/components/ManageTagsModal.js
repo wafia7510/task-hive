@@ -3,14 +3,14 @@ import { Modal, Form, Button, InputGroup } from 'react-bootstrap';
 import { axiosInstance } from '../api/axiosDefaults';
 import PropTypes from 'prop-types';
 
-const ManageTagsModal = ({ show, onHide, tags, setTags, notes }) => {
+const ManageTagsModal = ({ show, onHide, tags, setTags, notes, setNotes }) => {
   // States for tag management
-  const [tagInput, setTagInput] = useState(''); // New tag input
-  const [filter, setFilter] = useState(''); // Filter/search input
-  const [editTagId, setEditTagId] = useState(null); // ID of tag being edited
-  const [editTagName, setEditTagName] = useState(''); // Edited tag name
-  const [submitting, setSubmitting] = useState(false); // Submission state for adding
-  const [submittingEdit, setSubmittingEdit] = useState(false); // Submission state for editing
+  const [tagInput, setTagInput] = useState('');
+  const [filter, setFilter] = useState('');
+  const [editTagId, setEditTagId] = useState(null);
+  const [editTagName, setEditTagName] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [submittingEdit, setSubmittingEdit] = useState(false);
 
   const token = localStorage.getItem('authToken');
   const headers = { Authorization: `Token ${token}` };
@@ -32,7 +32,7 @@ const ManageTagsModal = ({ show, onHide, tags, setTags, notes }) => {
     }
   };
 
-  // Delete a tag (only if not used in any note)
+  // Delete a tag
   const handleDeleteTag = async (tagId, tagName) => {
     const tagInUse = notes.some(note => note.tags.includes(tagName));
     if (tagInUse) {
@@ -51,20 +51,37 @@ const ManageTagsModal = ({ show, onHide, tags, setTags, notes }) => {
     }
   };
 
-  // Start editing a tag
+  // Start editing
   const handleEditTag = (tag) => {
     setEditTagId(tag.id);
     setEditTagName(tag.name);
   };
 
-  // Save edited tag name
+  // Save edited tag and update notes
   const handleSaveEdit = async () => {
     if (!editTagName.trim()) return;
 
     setSubmittingEdit(true);
     try {
-      await axiosInstance.put(`/tags/${editTagId}/`, { name: editTagName }, { headers });
-      setTags(prev => prev.map(tag => tag.id === editTagId ? { ...tag, name: editTagName } : tag));
+      // Find the original tag name
+      const originalTag = tags.find(tag => tag.id === editTagId);
+      const oldName = originalTag?.name;
+
+      // Update the tag on the backend
+      const response = await axiosInstance.put(`/tags/${editTagId}/`, { name: editTagName }, { headers });
+
+      // Update tags state
+      setTags(prev => prev.map(tag => tag.id === editTagId ? response.data : tag));
+
+      // ✅ Update notes using the old tag name
+      setNotes(prevNotes =>
+        prevNotes.map(note => ({
+          ...note,
+          tags: note.tags.map(t => (t === oldName ? editTagName : t))
+        }))
+      );
+
+      // Reset UI
       setEditTagId(null);
       setEditTagName('');
     } catch (err) {
@@ -72,21 +89,19 @@ const ManageTagsModal = ({ show, onHide, tags, setTags, notes }) => {
     } finally {
       setSubmittingEdit(false);
     }
-  };
+};
 
-  // Filter tags by user input
+
   const filteredTags = tags.filter(tag =>
     tag.name.toLowerCase().includes(filter.toLowerCase())
   );
 
   return (
     <Modal show={show} onHide={onHide}>
-      {/* Modal Header */}
       <Modal.Header closeButton>
         <Modal.Title>Manage Tags</Modal.Title>
       </Modal.Header>
 
-      {/* Modal Body */}
       <Modal.Body>
         {/* Add New Tag */}
         <Form onSubmit={handleAddTag}>
@@ -102,11 +117,7 @@ const ManageTagsModal = ({ show, onHide, tags, setTags, notes }) => {
               <Button type="submit" variant="primary" disabled={submitting}>
                 {submitting ? (
                   <>
-                    <span
-                      className="spinner-border spinner-border-sm me-2"
-                      role="status"
-                      aria-hidden="true"
-                    ></span>
+                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
                     Adding...
                   </>
                 ) : (
@@ -130,7 +141,7 @@ const ManageTagsModal = ({ show, onHide, tags, setTags, notes }) => {
           />
         </Form.Group>
 
-        {/* Display filtered tags */}
+        {/* Display Tags */}
         {filteredTags.length === 0 ? (
           <p>No tags found.</p>
         ) : (
@@ -140,7 +151,6 @@ const ManageTagsModal = ({ show, onHide, tags, setTags, notes }) => {
               className="d-flex justify-content-between align-items-center mb-2"
             >
               {editTagId === tag.id ? (
-                // Edit Mode UI
                 <>
                   <Form.Control
                     value={editTagName}
@@ -155,11 +165,7 @@ const ManageTagsModal = ({ show, onHide, tags, setTags, notes }) => {
                   >
                     {submittingEdit ? (
                       <>
-                        <span
-                          className="spinner-border spinner-border-sm me-2"
-                          role="status"
-                          aria-hidden="true"
-                        ></span>
+                        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
                         Saving...
                       </>
                     ) : (
@@ -175,7 +181,6 @@ const ManageTagsModal = ({ show, onHide, tags, setTags, notes }) => {
                   </Button>
                 </>
               ) : (
-                // Normal display with Edit/Delete buttons
                 <>
                   <span>{tag.name}</span>
                   <div className="d-flex gap-2">
@@ -204,13 +209,14 @@ const ManageTagsModal = ({ show, onHide, tags, setTags, notes }) => {
   );
 };
 
-// Props validation
+// ✅ Prop Types
 ManageTagsModal.propTypes = {
-  show: PropTypes.bool.isRequired,      // Modal visibility
-  onHide: PropTypes.func.isRequired,    // Function to close modal
-  tags: PropTypes.array.isRequired,     // Current list of tags
-  setTags: PropTypes.func.isRequired,   // Setter to update tag list
-  notes: PropTypes.array.isRequired,    // Notes (used to prevent deleting in-use tags)
+  show: PropTypes.bool.isRequired,
+  onHide: PropTypes.func.isRequired,
+  tags: PropTypes.array.isRequired,
+  setTags: PropTypes.func.isRequired,
+  notes: PropTypes.array.isRequired,
+  setNotes: PropTypes.func.isRequired, // ✅ added
 };
 
 export default ManageTagsModal;
