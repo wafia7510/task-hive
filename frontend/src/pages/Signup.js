@@ -38,9 +38,16 @@ const Signup = () => {
 
     try {
       setLoading(true);
-      await signup(formData);
-      alert("Successfully registered!");
-      navigate('/login'); // 👉 Redirect to login after successful signup
+      const result = await signup(formData);
+
+      if (result.success) {
+        alert("Successfully registered!");
+        console.log("Submitting form data:", formData);
+        navigate('/login');
+      } else {
+        setError(result.message || 'Failed to create an account');
+      }
+
     } catch (err) {
       console.error("Signup failed:", err.response?.data || err.message);
       setError('Failed to create an account');

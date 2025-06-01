@@ -69,8 +69,9 @@ REST_FRAMEWORK = {
 }
 
 REST_AUTH_REGISTER_SERIALIZERS = {
-    'REGISTER_SERIALIZER': 'accounts.serializers.CustomRegisterSerializer',
+    'register': 'accounts.serializers.CustomRegisterSerializer',
 }
+
 
 # MIDDLEWARE
 MIDDLEWARE = [

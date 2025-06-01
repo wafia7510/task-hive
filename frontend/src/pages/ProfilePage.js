@@ -15,48 +15,57 @@ const CLOUDINARY_BASE_URL = process.env.REACT_APP_CLOUDINARY_BASE_URL || 'https:
 
 const ProfilePage = () => {
   const { username } = useParams(); // Extract username from URL
-  const [profile, setProfile] = useState(null); // Profile data
-  const [loading, setLoading] = useState(true); // Loading state
-  const [saving, setSaving] = useState(false); // Profile update state
-  const [error, setError] = useState(''); // Error message
-  const [toast, setToast] = useState(null); // Toast notification
-  const [showFollowersModal, setShowFollowersModal] = useState(false); // Followers modal toggle
-  const [showFollowingModal, setShowFollowingModal] = useState(false); // Following modal toggle
-  const [showEditModal, setShowEditModal] = useState(false); // Edit modal toggle
-  const [showAccountModal, setShowAccountModal] = useState(false); // Account modal toggle
-  const [editForm, setEditForm] = useState({ bio: '', image: '' }); // Edit form data
-  const [imagePreview, setImagePreview] = useState(null); // Image preview for profile image
-  const isOwnProfile = !username; // Check if viewing own profile
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
+  const [toast, setToast] = useState(null);
+  const [showFollowersModal, setShowFollowersModal] = useState(false);
+  const [showFollowingModal, setShowFollowingModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showAccountModal, setShowAccountModal] = useState(false);
+  const [editForm, setEditForm] = useState({ bio: '', image: '' });
+  const [imagePreview, setImagePreview] = useState(null);
+  const isOwnProfile = !username;
+
+  // ✅ Fetch profile data
+  const fetchProfileData = async () => {
+    setProfile(null);
+    setLoading(true);
+    setError('');
+    try {
+      const token = localStorage.getItem('authToken');
+      const headers = { Authorization: `Token ${token}` };
+      const response = username
+        ? await axiosInstance.get(`/profiles/username/${username}/`, { headers })
+        : await axiosInstance.get('/profiles/me/', { headers });
+
+      setProfile(response.data);
+      setEditForm({ bio: response.data.bio || '', image: '' });
+      setImagePreview(null);
+    } catch (err) {
+      console.error(err);
+      setError('Could not fetch profile.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      // Reset profile and loading state to avoid showing stale data
-      setProfile(null);
-      setLoading(true);
-      setError('');
-
-      try {
-        const token = localStorage.getItem('authToken');
-        const headers = { Authorization: `Token ${token}` };
-        const response = username
-          ? await axiosInstance.get(`/profiles/username/${username}/`, { headers })
-          : await axiosInstance.get('/profiles/me/', { headers });
-
-        setProfile(response.data);
-        setEditForm({ bio: response.data.bio || '', image: '' });
-        setImagePreview(null);
-      } catch (err) {
-        console.error(err);
-        setError('Could not fetch profile.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProfile();
+    fetchProfileData();
   }, [username]);
 
-  // Handle changes in the edit form inputs
+  // ✅ Refresh profile when modals close
+  const handleFollowersModalClose = () => {
+    setShowFollowersModal(false);
+    setTimeout(() => fetchProfileData(), 300);
+  };
+
+  const handleFollowingModalClose = () => {
+    setShowFollowingModal(false);
+    setTimeout(() => fetchProfileData(), 300);
+  };
+
   const handleEditChange = (e) => {
     const { name, value, files } = e.target;
     if (name === 'image') {
@@ -68,14 +77,12 @@ const ProfilePage = () => {
     }
   };
 
-  // Cancel editing profile and reset form
   const handleCancelEdit = () => {
     setEditForm({ bio: profile?.bio || '', image: '' });
     setImagePreview(null);
     setShowEditModal(false);
   };
 
-  // Submit the updated profile info to the server
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
     setSaving(true);
@@ -90,18 +97,20 @@ const ProfilePage = () => {
     try {
       await axiosInstance.put('/profiles/me/', formData, { headers });
       setToast({ type: 'success', message: 'Profile updated successfully!' });
+      setTimeout(() => setToast(null), 4000); // Auto-dismiss after 4s
       setShowEditModal(false);
       const res = await axiosInstance.get('/profiles/me/', { headers });
       setProfile(res.data);
     } catch (err) {
       console.error('❌ Failed to update profile:', err);
       setToast({ type: 'danger', message: 'Failed to update profile.' });
+      setTimeout(() => setToast(null), 4000); // Auto-dismiss after 4s
+
     } finally {
       setSaving(false);
     }
   };
 
-  // Follow or unfollow the current profile user
   const handleFollowToggle = async () => {
     const token = localStorage.getItem('authToken');
     const headers = { Authorization: `Token ${token}` };
@@ -124,10 +133,11 @@ const ProfilePage = () => {
     } catch (err) {
       console.error('Follow/Unfollow failed:', err);
       setToast({ type: 'danger', message: 'Follow action failed.' });
+      setTimeout(() => setToast(null), 4000); // Auto-dismiss after 4s
+
     }
   };
 
-  // Resolve full image URL whether it's a Cloudinary path or a media path
   const getFullImageUrl = (path) => {
     if (!path) return null;
     if (typeof path === 'string' && (path.startsWith('http') || path.startsWith('https'))) {
@@ -142,7 +152,6 @@ const ProfilePage = () => {
     return `${CLOUDINARY_BASE_URL}${path.replace(/^image\/upload\//, '')}`;
   };
 
-  // If profile not found
   if (!loading && !profile) {
     return (
       <>
@@ -167,7 +176,6 @@ const ProfilePage = () => {
         <Container className="mt-4 d-flex justify-content-center">
           <Card className="shadow p-4 w-100" style={{ maxWidth: '500px' }}>
             <div className="text-center">
-              {/* Profile image */}
               <Image
                 src={
                   profile.image
@@ -180,21 +188,22 @@ const ProfilePage = () => {
                 alt={`Profile picture of @${profile.username}`}
                 className={styles.profileImage}
               />
-
               <h4 className={`mt-3 ${styles.username}`}>@{profile.username}</h4>
               <p className={styles.bioText}>{profile.bio || 'No bio added.'}</p>
 
-              {/* Followers and Following counts with modal triggers */}
               <p className={styles.stats}>
                 <strong>Followers:</strong>{' '}
-                <span style={{ cursor: 'pointer' }} onClick={() => setShowFollowersModal(true)}>{profile.followers_count}</span>
+                <span style={{ cursor: 'pointer' }} onClick={() => setShowFollowersModal(true)}>
+                  {profile.followers_count}
+                </span>
               </p>
               <p className={styles.stats}>
                 <strong>Following:</strong>{' '}
-                <span style={{ cursor: 'pointer' }} onClick={() => setShowFollowingModal(true)}>{profile.following_count}</span>
+                <span style={{ cursor: 'pointer' }} onClick={() => setShowFollowingModal(true)}>
+                  {profile.following_count}
+                </span>
               </p>
 
-              {/* Conditional buttons for own profile or follow/unfollow */}
               {isOwnProfile ? (
                 <>
                   <Button
@@ -229,20 +238,31 @@ const ProfilePage = () => {
         </Container>
       )}
 
-      {/* Toast message if present */}
       {toast && (
-        <Alert
-          variant={toast.type}
-          className="position-fixed top-0 end-0 m-3 shadow"
-          onClose={() => setToast(null)}
-          dismissible
-          role="alert"
+        <div
+          style={{
+            position: 'fixed',
+            bottom: '20px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 1050, // keeps it above modals etc
+            width: 'auto',
+            maxWidth: '90%',
+          }}
         >
-          {toast.message}
-        </Alert>
+          <Alert
+            variant={toast.type}
+            dismissible
+            onClose={() => setToast(null)}
+            role="alert"
+            className="shadow text-center"
+          >
+            {toast.message}
+          </Alert>
+        </div>
       )}
 
-      {/* Edit Profile Modal */}
+
       <Modal show={showEditModal} onHide={handleCancelEdit}>
         <Modal.Header closeButton aria-label="Close edit profile modal">
           <Modal.Title>Edit Profile</Modal.Title>
@@ -292,30 +312,18 @@ const ProfilePage = () => {
         </Modal.Body>
       </Modal>
 
-      {/* Modals for followers, following, and account */}
       <FollowersListModal
         username={profile?.username}
         show={showFollowersModal}
-        onHide={() => setShowFollowersModal(false)}
-        onFollowBack={() => {
-          setProfile(prev => ({
-            ...prev,
-            followers_count: prev.followers_count + 1
-          }));
-        }}
+        onHide={handleFollowersModalClose}
       />
 
       <FollowingListModal
         username={profile?.username}
         show={showFollowingModal}
-        onHide={() => setShowFollowingModal(false)}
-        onUnfollow={() => {
-          setProfile(prev => ({
-            ...prev,
-            following_count: prev.following_count - 1
-          }));
-        }}
+        onHide={handleFollowingModalClose}
       />
+
 
       <AccountModal
         show={showAccountModal}

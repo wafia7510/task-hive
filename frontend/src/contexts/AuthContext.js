@@ -55,7 +55,7 @@ export function AuthProvider({ children }) {
   const signup = async (formData) => {
     try {
       const response = await axiosInstance.post(
-        '/dj-rest-auth/registration/',
+        '/accounts/register/',
         {
           first_name: formData.firstName,
           last_name: formData.lastName,

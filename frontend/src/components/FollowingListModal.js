@@ -5,7 +5,7 @@ import { axiosInstance } from '../api/axiosDefaults';
 import { useAuth } from '../contexts/AuthContext';
 import PropTypes from 'prop-types';
 
-const FollowingListModal = ({ username, show, onHide, onUnfollow }) => {
+const FollowingListModal = ({ username, show, onHide }) => {
   // State to hold the list of users the profile is following
   const [followingList, setFollowingList] = useState([]);
   const [loading, setLoading] = useState(true); // Show spinner while loading
@@ -44,8 +44,7 @@ const FollowingListModal = ({ username, show, onHide, onUnfollow }) => {
       // Update list after unfollowing
       setFollowingList(prev => prev.filter(user => user.username !== targetUsername));
 
-      // Callback to parent to sync count or UI
-      if (onUnfollow) onUnfollow(targetUsername);
+      
     } catch {
       setError('Failed to unfollow. Try again.');
     }
@@ -124,7 +123,7 @@ FollowingListModal.propTypes = {
   username: PropTypes.string.isRequired,     // Profile username to fetch following for
   show: PropTypes.bool.isRequired,           // Modal visibility state
   onHide: PropTypes.func.isRequired,         // Function to close the modal
-  onUnfollow: PropTypes.func.isRequired,     // Callback after unfollowing a user
+  
 };
 
 export default FollowingListModal;

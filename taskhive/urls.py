@@ -36,7 +36,7 @@ urlpatterns = [
     path('api/comments/', include('comments.urls')),
     path('api/likes/', include('likes.urls')),
     path('api/dj-rest-auth/', include('dj_rest_auth.urls')),
-    path('api/dj-rest-auth/registration/', include('dj_rest_auth.registration.urls')),
+    
     path('api/csrf/', get_csrf_token),
     # Serve React frontend
     

@@ -5,7 +5,7 @@ import { axiosInstance } from '../api/axiosDefaults';
 import { useAuth } from '../contexts/AuthContext';
 import PropTypes from 'prop-types';
 
-const FollowersListModal = ({ username, show, onHide, onFollowBack }) => {
+const FollowersListModal = ({ username, show, onHide}) => {
   const [followersList, setFollowersList] = useState([]); // Stores followers
   const [loading, setLoading] = useState(true); // Loading state
   const [error, setError] = useState(''); // Error state
@@ -48,8 +48,7 @@ const FollowersListModal = ({ username, show, onHide, onFollowBack }) => {
         )
       );
 
-      // Optional external callback
-      if (onFollowBack) onFollowBack();
+      
     } catch {
       setError('Could not follow back.');
     }
@@ -136,7 +135,7 @@ FollowersListModal.propTypes = {
   username: PropTypes.string.isRequired,     // The profile being viewed
   show: PropTypes.bool.isRequired,           // Whether modal is visible
   onHide: PropTypes.func.isRequired,         // Function to close modal
-  onFollowBack: PropTypes.func.isRequired,   // Callback after following
+  
 };
 
 export default FollowersListModal;
