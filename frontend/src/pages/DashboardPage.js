@@ -69,7 +69,7 @@ const DashboardPage = () => {
       <Container className={styles.dashboardContainer} aria-labelledby="dashboard-heading">
         {/* Welcome header */}
         <h2 id="dashboard-heading" className="text-center mb-4">
-          👋 Welcome back, {user?.username}
+          👋 Welcome , {user?.username}
         </h2>
 
         {/* Dashboard banner image */}

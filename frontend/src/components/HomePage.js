@@ -38,9 +38,9 @@ const HomePage = () => {
       <Container className="my-5">
         <Row className="align-items-center">
           <Col md={6}>
-            <h2><strong>Organize Your Study Life with Ease</strong></h2>
+            <h2><strong>Your Smarter Way to Stay on Track</strong></h2>
             <p className="text-muted">
-              TaskHive helps you stay on top of assignments, collaborate with peers, and take meaningful notes — all in one place.
+              Stay ahead of your tasks, connect with peers, and capture every important idea — all in one place with TaskHive.
             </p>
             <Button variant="primary" onClick={handleMainButtonClick}>Join Us</Button>
           </Col>
