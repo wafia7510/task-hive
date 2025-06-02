@@ -242,7 +242,7 @@ const ProfilePage = () => {
         <div
           style={{
             position: 'fixed',
-            bottom: '20px',
+            bottom: '230px',
             left: '50%',
             transform: 'translateX(-50%)',
             zIndex: 1050, // keeps it above modals etc
