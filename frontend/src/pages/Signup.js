@@ -42,7 +42,6 @@ const Signup = () => {
 
       if (result.success) {
         alert("Successfully registered!");
-        console.log("Submitting form data:", formData);
         navigate('/login');
       } else {
         setError(result.message || 'Failed to create an account');
