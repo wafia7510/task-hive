@@ -13,6 +13,8 @@ import ProfilePage from './pages/ProfilePage';
 import ExploreProfilesPage from './pages/ExploreProfilesPage';
 import Footer from './components/Footer';
 import FeedPage from './pages/FeedPage';
+import NotFound from './pages/NotFound';
+
 
 function App() {
   return (
@@ -90,6 +92,8 @@ function App() {
               }
               aria-label="Feed Page Route"
             />
+            <Route path="*" element={<NotFound />} aria-label="Not Found Page Route" />
+
           </Routes>
         </div>
 
