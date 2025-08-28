@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from notes.models import Note
 
+
 class Comment(models.Model):
     """Model representing a comment made by a user on a note."""
     note = models.ForeignKey(Note, on_delete=models.CASCADE, related_name='comments')
