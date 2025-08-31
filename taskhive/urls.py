@@ -14,31 +14,30 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
-from django.urls import path, include, re_path
-from django.views.generic import TemplateView
+from django.urls import include, path, re_path
 from django.views.decorators.cache import never_cache
+from django.views.generic import TemplateView
+
 from .views import FrontendAppView, get_csrf_token
 
 index_view = never_cache(TemplateView.as_view(template_name="index.html"))
 
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    
+    path("admin/", admin.site.urls),
     # API endpoints
-    path('api/accounts/', include('accounts.urls')),
-    path('api/profiles/', include('profiles.urls')),
-    path('api/follows/', include('follows.urls')),
-    path('api/tasks/', include('tasks.urls')),
-    path('api/notes/', include('notes.urls')),
-    path('api/tags/', include('tags.urls')),
-    path('api/comments/', include('comments.urls')),
-    path('api/likes/', include('likes.urls')),
-    path('api/dj-rest-auth/', include('dj_rest_auth.urls')),
-    
-    path('api/csrf/', get_csrf_token),
+    path("api/accounts/", include("accounts.urls")),
+    path("api/profiles/", include("profiles.urls")),
+    path("api/follows/", include("follows.urls")),
+    path("api/tasks/", include("tasks.urls")),
+    path("api/notes/", include("notes.urls")),
+    path("api/tags/", include("tags.urls")),
+    path("api/comments/", include("comments.urls")),
+    path("api/likes/", include("likes.urls")),
+    path("api/dj-rest-auth/", include("dj_rest_auth.urls")),
+    path("api/csrf/", get_csrf_token),
     # Serve React frontend
-    
-    re_path(r'^(?!admin|api).*$', FrontendAppView.as_view()),
+    re_path(r"^(?!admin|api).*$", FrontendAppView.as_view()),
 ]

@@ -1,17 +1,18 @@
-from django.test import TestCase
 from django.contrib.auth.models import User
-from notes.models import Note
-from likes.models import Like
 from django.db.utils import IntegrityError
+from django.test import TestCase
+
+from likes.models import Like
+from notes.models import Note
+
 
 class LikeModelTest(TestCase):
     def setUp(self):
         # Create a test user and a note
-        self.user = User.objects.create_user(username='testuser', password='pass123')
+        self.user = User.objects.create_user(username="testuser",
+                                             password="pass123")
         self.note = Note.objects.create(
-            owner=self.user,
-            title='Test Note',
-            content='Sample content'
+            owner=self.user, title="Test Note", content="Sample content"
         )
 
     def test_create_like(self):

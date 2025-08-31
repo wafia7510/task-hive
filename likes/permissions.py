@@ -1,5 +1,6 @@
 from rest_framework import permissions
 
+
 class IsLikeOwnerOrReadOnly(permissions.BasePermission):
     """Only the user who liked the note can remove their like."""
 

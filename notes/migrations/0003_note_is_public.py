@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('notes', '0002_note_tags'),
+        ("notes", "0002_note_tags"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='note',
-            name='is_public',
+            model_name="note",
+            name="is_public",
             field=models.BooleanField(default=False),
         ),
     ]

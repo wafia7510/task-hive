@@ -1,5 +1,6 @@
 from rest_framework import permissions
 
+
 class IsCommentOwnerOrReadOnly(permissions.BasePermission):
     """Custom permission to allow only the comment owner to edit or delete."""
 

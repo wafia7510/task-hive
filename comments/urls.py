@@ -1,10 +1,14 @@
 from django.urls import path
-from .views import CommentListCreateView, CommentDetailView
+
+from .views import CommentDetailView, CommentListCreateView
 
 urlpatterns = [
     # GET to list & POST to create comments for a specific note
-    path('note/<int:note_id>/', CommentListCreateView.as_view(), name='comment-list-create'),
-
+    path(
+        "note/<int:note_id>/",
+        CommentListCreateView.as_view(),
+        name="comment-list-create",
+    ),
     # Retrieve/update/delete individual comment
-    path('<int:pk>/', CommentDetailView.as_view(), name='comment-detail'),
+    path("<int:pk>/", CommentDetailView.as_view(), name="comment-detail"),
 ]

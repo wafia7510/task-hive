@@ -7,13 +7,19 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('profiles', '0003_profile_created_at_profile_updated_at'),
+        ("profiles", "0003_profile_created_at_profile_updated_at"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='profile',
-            name='image',
-            field=cloudinary.models.CloudinaryField(blank=True, default='media/images/default_profile_avbbjz', max_length=255, null=True, verbose_name='image'),
+            model_name="profile",
+            name="image",
+            field=cloudinary.models.CloudinaryField(
+                blank=True,
+                default="media/images/default_profile_avbbjz",
+                max_length=255,
+                null=True,
+                verbose_name="image",
+            ),
         ),
     ]

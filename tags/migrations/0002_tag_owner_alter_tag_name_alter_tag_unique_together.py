@@ -8,24 +8,29 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tags', '0001_initial'),
+        ("tags", "0001_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='tag',
-            name='owner',
-            field=models.ForeignKey(default=2, on_delete=django.db.models.deletion.CASCADE, related_name='tags', to=settings.AUTH_USER_MODEL),
+            model_name="tag",
+            name="owner",
+            field=models.ForeignKey(
+                default=2,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="tags",
+                to=settings.AUTH_USER_MODEL,
+            ),
             preserve_default=False,
         ),
         migrations.AlterField(
-            model_name='tag',
-            name='name',
+            model_name="tag",
+            name="name",
             field=models.CharField(max_length=50),
         ),
         migrations.AlterUniqueTogether(
-            name='tag',
-            unique_together={('owner', 'name')},
+            name="tag",
+            unique_together={("owner", "name")},
         ),
     ]
