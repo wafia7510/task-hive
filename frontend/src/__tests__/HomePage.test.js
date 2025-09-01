@@ -23,11 +23,11 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import HomePage from '../components/HomePage';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { AuthContext } from '../contexts/AuthContext'; // ✅ Import context
+import { AuthContext } from '../contexts/AuthContext';
 
 describe('HomePage', () => {
   test('renders hero heading and mocked navbar', () => {
-    const mockUser = { username: 'testuser' }; // ✅ mock user object
+    const mockUser = { username: 'testuser' };
 
     render(
       <Router>
@@ -37,10 +37,18 @@ describe('HomePage', () => {
       </Router>
     );
 
+    // ✅ Updated to current hero copy (robust to markup like <strong>)
     expect(
-      screen.getByText(/organize your study life with ease/i)
+      screen.getByRole('heading', {
+        level: 2,
+        name: /your smarter way to stay on track/i,
+      })
     ).toBeInTheDocument();
 
+    // ✅ Mocked navbar visible
     expect(screen.getByTestId('navbar')).toBeInTheDocument();
+
+    // (Optional extra stability) also check a CTA that appears in your DOM
+    expect(screen.getByRole('button', { name: /join us/i })).toBeInTheDocument();
   });
 });

@@ -12,7 +12,7 @@ jest.mock('../components/NavBar', () => ({
 }));
 
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import DashboardPage from '../pages/DashboardPage';
 import { AuthContext } from '../contexts/AuthContext';
@@ -21,9 +21,15 @@ import { axiosInstance } from '../api/axiosDefaults';
 describe('DashboardPage', () => {
   const mockUser = { username: 'testuser' };
 
-  const mockTasks = [{ id: 1, title: 'Test Task', status: 'todo', priority: 'medium' }];
-  const mockNotes = [{ id: 1, title: 'Test Note', content: 'This is a test note.' }];
-  const mockFeed = [{ id: 1, title: 'Feed Note', content: 'Feed content', owner: 'friend1' }];
+  const mockTasks = [
+    { id: 1, title: 'Test Task', status: 'todo', priority: 'medium' },
+  ];
+  const mockNotes = [
+    { id: 1, title: 'Test Note', content: 'This is a test note.' },
+  ];
+  const mockFeed = [
+    { id: 1, title: 'Feed Note', content: 'Feed content', owner: 'friend1' },
+  ];
 
   beforeEach(() => {
     // ✅ Mock all 3 dashboard API calls
@@ -48,14 +54,15 @@ describe('DashboardPage', () => {
       </Router>
     );
 
-    // ✅ Expect greeting to appear
-    await waitFor(() =>
-      expect(screen.getByText(/welcome back, testuser/i)).toBeInTheDocument()
-    );
+    // ✅ Robust greeting check (handles emoji, commas, whitespace)
+    const greeting = await screen.findByRole('heading', { level: 2, name: /welcome/i });
+    expect(greeting).toHaveTextContent(/welcome/i);
+    expect(greeting).toHaveTextContent(/testuser/i);
+    // Alternatively: expect(greeting).toHaveTextContent(/welcome.*testuser/i);
 
     // ✅ Check task, note, and feed content
-    expect(screen.getByText('Test Task')).toBeInTheDocument();
-    expect(screen.getByText('Test Note')).toBeInTheDocument();
-    expect(screen.getByText('Feed Note')).toBeInTheDocument();
+    expect(await screen.findByText('Test Task')).toBeInTheDocument();
+    expect(await screen.findByText('Test Note')).toBeInTheDocument();
+    expect(await screen.findByText('Feed Note')).toBeInTheDocument();
   });
 });
